@@ -3,3 +3,6 @@
 ################################################################################
 
 /LiqWorkflow.Abstractions/obj
+/LiqWorkflow/obj
+/.vs/LiqWorkflow
+/src/LiqWorkflow/obj
