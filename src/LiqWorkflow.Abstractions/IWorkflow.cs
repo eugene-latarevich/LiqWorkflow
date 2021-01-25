@@ -1,13 +1,17 @@
 ﻿using System.Threading.Tasks;
+using LiqWorkflow.Abstractions.Models;
+using LiqWorkflow.Abstractions.Models.Enums;
 
 namespace LiqWorkflow.Abstractions
 {
     public interface IWorkflow
     {
+        WorkflowStatus Status { get; }
+
         IWorkflowConfiguration Configuration { get; }
 
-        Task StartAsync();
+        Task<WorkflowResult> StartAsync();
 
-        Task StopAsync();
+        Task<WorkflowResult> StopAsync();
     }
 }

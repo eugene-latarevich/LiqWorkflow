@@ -1,8 +1,6 @@
-﻿using System.Collections.Immutable;
-using System.Threading;
-using LiqWorkflow.Abstractions.Activities;
+﻿using System.Threading;
 
-namespace LiqWorkflow.Abstractions.Models
+namespace LiqWorkflow.Abstractions.Models.Configurations
 {
     public class WorkflowConfiguration : IWorkflowConfiguration
     {

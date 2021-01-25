@@ -1,5 +1,5 @@
 ﻿using System.Threading;
-using LiqWorkflow.Abstractions.Models;
+using LiqWorkflow.Abstractions.Models.Configurations;
 
 namespace LiqWorkflow.Abstractions
 {

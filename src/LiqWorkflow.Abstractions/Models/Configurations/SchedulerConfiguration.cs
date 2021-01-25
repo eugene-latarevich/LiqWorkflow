@@ -1,11 +1,14 @@
 ﻿using System;
 using LiqWorkflow.Abstractions.Models.Enums;
 
-namespace LiqWorkflow.Abstractions.Models
+namespace LiqWorkflow.Abstractions.Models.Configurations
 {
     public class SchedulerConfiguration
     {
-        public SchedulerConfiguration(SchedulerType schedulerType, string chrone, DateTime startAt)
+        public SchedulerConfiguration(
+            SchedulerType schedulerType, 
+            string chrone, 
+            DateTime startAt)
         {
             SchedulerType = schedulerType;
             Chrone = chrone;
