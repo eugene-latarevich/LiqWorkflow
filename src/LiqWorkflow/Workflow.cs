@@ -1,28 +1,44 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using LiqWorkflow.Abstractions;
+using LiqWorkflow.Exceptions;
 
 namespace LiqWorkflow
 {
     public class Workflow : IWorkflow
     {
-        private CancellationTokenSource _cts;
+        private IEnumerable<IWorkflowBranch> _branches;
 
-        public Workflow(IWorkflowConfiguration configuration)
+        public Workflow(
+            IWorkflowConfiguration configuration,
+            IEnumerable<IWorkflowBranch> branches)
         {
             Configuration = configuration;
+
+            _branches = branches;
         }
 
         public IWorkflowConfiguration Configuration { get; }
 
-        public Task StartAsync()
+        public async Task StartAsync()
         {
-            return Task.CompletedTask;
+            ThrowIfNotValidConfiguration();
+
         }
 
-        public Task StopAsync()
+        public async Task StopAsync()
         {
-            return Task.CompletedTask;
+            ThrowIfNotValidConfiguration();
+
+        }
+
+        private void ThrowIfNotValidConfiguration()
+        {
+            if (_branches == null || !_branches.Any() || _branches.Any(x => !x.IsValid()))
+            {
+                throw new InvalidWorkflowConfigurationException();
+            }
         }
     }
 }

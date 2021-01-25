@@ -9,13 +9,11 @@ namespace LiqWorkflow.Abstractions.Models
         public WorkflowConfiguration(
             string id, 
             string name, 
-            SchedulerConfiguration schedulerConfiguration,
-            ImmutableDictionary<string, IWorkflowActivity> activities)
+            SchedulerConfiguration schedulerConfiguration)
         {
             Id = id;
             Name = name;
             SchedulerConfiguration = schedulerConfiguration;
-            Activities = activities;
 
             CancellationTokenSource = new CancellationTokenSource();
         }
@@ -25,8 +23,6 @@ namespace LiqWorkflow.Abstractions.Models
         public string Name { get; }
 
         public SchedulerConfiguration SchedulerConfiguration { get; }
-
-        public ImmutableDictionary<string, IWorkflowActivity> Activities { get; }
 
         public CancellationTokenSource CancellationTokenSource { get; }
     }
