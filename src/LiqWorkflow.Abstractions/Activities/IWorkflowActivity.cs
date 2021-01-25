@@ -10,7 +10,7 @@ namespace LiqWorkflow.Abstractions.Activities
     {
         ActivityConfiguration Configuration { get; }
 
-        ImmutableDictionary<string, IWorkflowBranch> Branches { get; set; }
+        ImmutableDictionary<string, IWorkflowBranch> Branches { get; }
 
         Task ExecuteAsync(ActivityData data, CancellationToken cancellationToken = default);
     }
