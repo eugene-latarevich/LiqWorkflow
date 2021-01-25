@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Threading;
 using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Models;
 
@@ -10,8 +11,10 @@ namespace LiqWorkflow.Abstractions
 
         string Name { get; }
 
+        CancellationTokenSource CancellationTokenSource { get; }
+
         SchedulerConfiguration SchedulerConfiguration { get; }
 
-        ImmutableDictionary<int, IWorkflowActivity> Activities { get; }
+        ImmutableDictionary<string, IWorkflowActivity> Activities { get; }
     }
 }

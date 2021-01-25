@@ -4,4 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LiqWorkflow.Abstractions\LiqWorkflow.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

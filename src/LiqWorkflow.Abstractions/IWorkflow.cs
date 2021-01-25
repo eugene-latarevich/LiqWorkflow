@@ -1,14 +1,13 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace LiqWorkflow.Abstractions
 {
     public interface IWorkflow
     {
-        IWorkflowConfiguration Configuration { get; set; }
+        IWorkflowConfiguration Configuration { get; }
 
-        Task StartAsync(CancellationToken cancellationToken = default);
+        Task StartAsync();
 
-        Task StopAsync(CancellationToken cancellationToken = default);
+        Task StopAsync();
     }
 }
