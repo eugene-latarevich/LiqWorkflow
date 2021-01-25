@@ -3,7 +3,7 @@
     public enum SchedulerType
     {
         // Starts immediately once
-        Immidiate = 1,
+        Immediate = 1,
 
         // Executes once in specific time
         Scheduled = 2,
