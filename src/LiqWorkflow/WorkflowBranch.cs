@@ -1,10 +1,14 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LiqWorkflow.Abstractions;
 using LiqWorkflow.Abstractions.Activities;
+using LiqWorkflow.Abstractions.Models;
 using LiqWorkflow.Common.Extensions;
+using LiqWorkflow.Common.Helpers;
+using Microsoft.Extensions.Logging;
 
 namespace LiqWorkflow
 {
@@ -13,8 +17,17 @@ namespace LiqWorkflow
     // get and store results
     public class WorkflowBranch : IWorkflowBranch
     {
-        public WorkflowBranch(ImmutableDictionary<string, IWorkflowActivity> activities)
+        private readonly IWorkflowConfiguration _workflowConfiguration;
+        private readonly ILogger<WorkflowBranch> _logger;
+
+        public WorkflowBranch(
+            IWorkflowConfiguration workflowConfiguration,
+            ImmutableDictionary<string, IWorkflowActivity> activities,
+            ILogger<WorkflowBranch> logger)
         {
+            _workflowConfiguration = workflowConfiguration;
+            _logger = logger;
+
             Activities = activities;
         }
 
@@ -22,11 +35,27 @@ namespace LiqWorkflow
 
         public async Task PulseAsync(CancellationToken cancellationToken)
         {
-            foreach (var keyActivityPair in Activities)
+            ActivityData lastResult = null;
+            foreach (var activity in Activities.Select(x => x.Value))
             {
-                var activity = keyActivityPair.Value;
+                try
+                {
+                    var activityData = MergeInitialData(lastResult);
+                    var activityResult = await TaskHelper.RetryOnConditionOrException(
+                        condition: result => result.Succeeded,
+                        retryFunc: () => activity.ExecuteAsync(activityData, cancellationToken),
+                        _workflowConfiguration.RetrySetting.RetryCount,
+                        _workflowConfiguration.RetrySetting.Delay,
+                        cancellationToken);
 
-                var result = await activity.ExecuteAsync(null, cancellationToken);
+                    lastResult = activityResult.Value;
+                }
+                catch (Exception exception)
+                {
+                    var message = $"Error on executin Activity with Id={activity.Configuration.ActivityId}";
+                    _logger.LogError(exception, message);
+                    throw new Exception(message, exception);
+                }
             }
         }
 
@@ -34,6 +63,11 @@ namespace LiqWorkflow
         {
             var activities = Activities.Select(x => x.Value);
             return activities.ValidateBranchStartEnd() && activities.ValidateInnerBranches();
+        }
+
+        private ActivityData MergeInitialData(ActivityData activityData)
+        {
+            return activityData;
         }
     }
 }
