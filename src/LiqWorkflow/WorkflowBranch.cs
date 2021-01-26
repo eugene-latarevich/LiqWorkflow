@@ -33,7 +33,7 @@ namespace LiqWorkflow
         public bool IsValid()
         {
             var activities = Activities.Select(x => x.Value);
-            return !activities.ValidateBranchStartEnd() || activities.ValidateInnerBranches();
+            return activities.ValidateBranchStartEnd() && activities.ValidateInnerBranches();
         }
     }
 }
