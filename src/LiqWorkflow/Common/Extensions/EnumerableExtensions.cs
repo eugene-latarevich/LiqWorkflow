@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace LiqWorkflow.Common.Extensions
 {
-    static class EnumerableExtenions
+    static class EnumerableExtensions
     {
         public static async Task ForEachAsync<T>(this IEnumerable<T> source, Func<T, Task> func)
         {

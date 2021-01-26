@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-using LiqWorkflow.Abstractions.Models.Configurations;
 
 namespace LiqWorkflow.Abstractions
 {
@@ -10,7 +9,5 @@ namespace LiqWorkflow.Abstractions
         string Name { get; }
 
         CancellationTokenSource CancellationTokenSource { get; }
-
-        SchedulerConfiguration SchedulerConfiguration { get; }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class InvalidWorkflowConfigurationException : LiqWorkflowException
     {
-        public InvalidWorkflowConfigurationException()
+        public InvalidWorkflowConfigurationException() 
             : base("Invalid workflow configuration")
         {
 

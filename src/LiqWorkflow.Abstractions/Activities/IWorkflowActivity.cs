@@ -12,6 +12,6 @@ namespace LiqWorkflow.Abstractions.Activities
 
         ImmutableDictionary<string, IWorkflowBranch> Branches { get; }
 
-        Task ExecuteAsync(ActivityData data, CancellationToken cancellationToken = default);
+        Task<WorkflowResult<ActivityData>> ExecuteAsync(ActivityData data, CancellationToken cancellationToken = default);
     }
 }

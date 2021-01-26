@@ -7,7 +7,7 @@ namespace LiqWorkflow.Abstractions
 {
     public interface IWorkflowBranch
     {
-        ImmutableDictionary<string, IWorkflowActivity> Activities { get; set; }
+        ImmutableDictionary<string, IWorkflowActivity> Activities { get; }
 
         Task PulseAsync(CancellationToken cancellationToken);
 

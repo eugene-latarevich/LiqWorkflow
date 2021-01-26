@@ -7,3 +7,5 @@
 /.vs/LiqWorkflow
 /src/LiqWorkflow/obj
 /src/LiqWorkflow.Abstractions/obj
+/src/LiqWorkflow/bin/Debug/netcoreapp3.1
+/src/LiqWorkflow.Abstractions/bin/Debug/netcoreapp3.1
