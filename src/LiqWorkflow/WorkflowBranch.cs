@@ -47,6 +47,8 @@ namespace LiqWorkflow
             {
                 try
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     var activityResult = await TaskHelper.RetryOnConditionOrException(
                         condition: result => result.Succeeded,
                         retryFunc: () => activity.ExecuteAsync(lastResult, cancellationToken),
@@ -56,13 +58,24 @@ namespace LiqWorkflow
 
                     lastResult = activityResult.Value;
                 }
+                catch (OperationCanceledException exception)
+                {
+                    ProcessError(activity, exception);
+                    return;
+                }
                 catch (Exception exception)
                 {
-                    var message = $"Error on executing Activity with Id={activity.Configuration.ActivityId}";
-                    _workflowMessageEventBroker.PublishMessage(OnLogData.Error(message, exception));
+                    var message = ProcessError(activity, exception);
                     throw new Exception(message, exception);
                 }
             }
+        }
+
+        private string ProcessError(IWorkflowActivity activity, Exception exception)
+        {
+            var message = $"Error on executing Activity with Id={activity.Configuration.ActivityId}";
+            _workflowMessageEventBroker.PublishMessage(OnLogData.Error(message, exception));
+            return message;
         }
     }
 }
