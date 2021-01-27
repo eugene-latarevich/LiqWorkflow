@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LiqWorkflow.Abstractions;
 using LiqWorkflow.Abstractions.Activities;
+using LiqWorkflow.Abstractions.Events;
 using LiqWorkflow.Abstractions.Models;
 using LiqWorkflow.Abstractions.Models.Configurations;
 
@@ -12,10 +13,14 @@ namespace LiqWorkflow.Activities
     public abstract class Activity : IWorkflowActivity
     {
         private readonly IWorkflowActivity _activity;
+        private readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
 
-        protected Activity(IWorkflowActivity activity)
+        protected Activity(
+            IWorkflowActivity activity,
+            IWorkflowMessageEventBroker workflowMessageEventBroker)
         {
             _activity = activity;
+            _workflowMessageEventBroker = workflowMessageEventBroker;
 
             Configuration = activity.Configuration;
             Branches = activity.Branches;
@@ -35,9 +40,13 @@ namespace LiqWorkflow.Activities
                 
                 var processingData = MergeInitialData(initialData, data);
 
+                MessageOnStartActivity(processingData);
                 var result = await _activity.ExecuteAsync(processingData, cancellationToken);
 
-                return result;
+                await ProcessResultAsync(result, cancellationToken);
+                MessageOnFinishActivity(result);
+
+                return result.Succeeded ? result : ProcessErrorResult(result.Exception);
             }
             catch (OperationCanceledException exception)
             {
@@ -49,14 +58,31 @@ namespace LiqWorkflow.Activities
             }
         }
 
+        protected abstract Task ProcessResultAsync(WorkflowResult<ActivityData> result, CancellationToken cancellationToken);
+
         protected abstract Task<ActivityData> LoadInitialDataAsync(CancellationToken cancellationToken);
 
         protected abstract ActivityData MergeInitialData(ActivityData initialData, ActivityData data);
 
+        private void MessageOnStartActivity(ActivityData data)
+        {
+            var message = $"Activity with Id={Configuration.ActivityId} has been started.";
+            _workflowMessageEventBroker.PublishMessage(OnLogData.Info(message, data));
+        }
+
+        private void MessageOnFinishActivity(WorkflowResult<ActivityData> result)
+        {
+            if (result.Succeeded)
+            {
+                var message = $"Activity with Id={Configuration.ActivityId} has been finished.";
+                _workflowMessageEventBroker.PublishMessage(OnLogData.Info(message, result.Value));
+            }
+        }
+
         private WorkflowResult<ActivityData> ProcessErrorResult(Exception exception)
         {
-
-
+            var message = $"Error on executing Activity with Id={Configuration.ActivityId}";
+            _workflowMessageEventBroker.PublishMessage(OnLogData.Error(message, exception));
             return WorkflowResult<ActivityData>.Error(exception);
         }
     }

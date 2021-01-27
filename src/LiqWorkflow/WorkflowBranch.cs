@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LiqWorkflow.Abstractions;
 using LiqWorkflow.Abstractions.Activities;
+using LiqWorkflow.Abstractions.Events;
 using LiqWorkflow.Abstractions.Models;
 using LiqWorkflow.Activities;
 using LiqWorkflow.Common.Extensions;
@@ -11,17 +12,18 @@ using LiqWorkflow.Common.Helpers;
 
 namespace LiqWorkflow
 {
-    // TODO
-    // send data to context
     public class WorkflowBranch : IWorkflowBranch, IWorkflowBranchContinuation
     {
         private readonly IWorkflowConfiguration _workflowConfiguration;
+        private readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
 
         public WorkflowBranch(
             IWorkflowConfiguration workflowConfiguration,
+            IWorkflowMessageEventBroker workflowMessageEventBroker,
             ImmutableDictionary<string, IWorkflowActivity> activities)
         {
             _workflowConfiguration = workflowConfiguration;
+            _workflowMessageEventBroker = workflowMessageEventBroker;
 
             Activities = new OrderedActivityCollection(activities);
         }
@@ -57,8 +59,7 @@ namespace LiqWorkflow
                 catch (Exception exception)
                 {
                     var message = $"Error on executing Activity with Id={activity.Configuration.ActivityId}";
-                    //todo log through context
-                    //_logger.LogError(exception, message);
+                    _workflowMessageEventBroker.PublishMessage(OnLogData.Error(message, exception));
                     throw new Exception(message, exception);
                 }
             }

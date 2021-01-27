@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LiqWorkflow.Abstractions;
+using LiqWorkflow.Abstractions.Events;
 using LiqWorkflow.Abstractions.Models;
 using LiqWorkflow.Abstractions.Models.Enums;
 using LiqWorkflow.Common.Extensions;
@@ -11,18 +12,21 @@ using LiqWorkflow.Exceptions;
 
 namespace LiqWorkflow
 {
-    public class Workflow : IWorkflow
+    public class Workflow : IWorkflow, IDisposable
     {
         private readonly IEnumerable<IWorkflowBranch> _branches;
+        private readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
         public Workflow(
             IWorkflowConfiguration configuration,
-            IEnumerable<IWorkflowBranch> branches)
+            IEnumerable<IWorkflowBranch> branches,
+            IWorkflowMessageEventBroker workflowMessageEventBroker)
         {
             Configuration = configuration;
 
             _branches = branches;
+            _workflowMessageEventBroker = workflowMessageEventBroker;
         }
 
         public WorkflowStatus Status { get; private set; } = WorkflowStatus.NotStarted;
@@ -46,7 +50,8 @@ namespace LiqWorkflow
             }
             catch (Exception exception)
             {
-
+                var message = $"Error on start Workflow with Id={Configuration.Id}";
+                _workflowMessageEventBroker.PublishMessage(OnLogData.Error(message, exception));
             }
             finally
             {
@@ -71,7 +76,8 @@ namespace LiqWorkflow
             }
             catch (Exception exception)
             {
-
+                var message = $"Error on stop Workflow with Id={Configuration.Id}";
+                _workflowMessageEventBroker.PublishMessage(OnLogData.Error(message, exception));
             }
             finally
             {
@@ -79,6 +85,11 @@ namespace LiqWorkflow
             }
            
             return WorkflowResult.Error();
+        }
+
+        public void Dispose()
+        {
+            _semaphoreSlim.Dispose();
         }
 
         private void ThrowIfNotValidConfiguration()

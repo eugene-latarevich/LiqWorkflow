@@ -11,8 +11,8 @@ namespace LiqWorkflow.Activities
     {
         private readonly IDictionary<string, IWorkflowActivity> _activities = new Dictionary<string, IWorkflowActivity>();
 
+        private int _startFrom;
         private bool _canStartFrom = true;
-        private int _startFrom = 0;
 
         public OrderedActivityCollection(ImmutableDictionary<string, IWorkflowActivity> activities)
         {
