@@ -4,22 +4,22 @@
     {
         public ActivityConfiguration(
             string activityId, 
-            string activityToId,
+            ActivityTransition transition,
             bool isBranchStartPoint = false,
             bool isBranchFinishPoint = false)
         {
             ActivityId = activityId;
-            ActivityToId = activityToId;
             IsBranchStartPoint = isBranchStartPoint;
             IsBranchFinishPoint = isBranchFinishPoint;
+            Transition = transition;
         }
 
         public string ActivityId { get; }
 
-        public string ActivityToId { get; }
-
         public bool IsBranchStartPoint { get; }
 
         public bool IsBranchFinishPoint { get; }
+
+        public ActivityTransition Transition { get; }
     }
 }

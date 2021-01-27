@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LiqWorkflow.Abstractions;
 using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Models;
+using LiqWorkflow.Activities;
 using LiqWorkflow.Common.Extensions;
 using LiqWorkflow.Common.Helpers;
 using Microsoft.Extensions.Logging;
@@ -15,7 +15,8 @@ namespace LiqWorkflow
     // TODO
     // get and store initial data
     // get and store results
-    public class WorkflowBranch : IWorkflowBranch
+    // send data to context
+    public class WorkflowBranch : IWorkflowBranch, IWorkflowBranchContinuation
     {
         private readonly IWorkflowConfiguration _workflowConfiguration;
         private readonly ILogger<WorkflowBranch> _logger;
@@ -28,15 +29,15 @@ namespace LiqWorkflow
             _workflowConfiguration = workflowConfiguration;
             _logger = logger;
 
-            Activities = activities;
+            Activities = new OrderedActivityCollection(activities);
         }
 
-        public ImmutableDictionary<string, IWorkflowActivity> Activities { get; }
+        public IOrderedActivityCollection Activities { get; }
 
         public async Task PulseAsync(CancellationToken cancellationToken)
         {
             ActivityData lastResult = null;
-            foreach (var activity in Activities.Select(x => x.Value))
+            foreach (var activity in Activities)
             {
                 try
                 {
@@ -44,26 +45,28 @@ namespace LiqWorkflow
                     var activityResult = await TaskHelper.RetryOnConditionOrException(
                         condition: result => result.Succeeded,
                         retryFunc: () => activity.ExecuteAsync(activityData, cancellationToken),
-                        _workflowConfiguration.RetrySetting.RetryCount,
-                        _workflowConfiguration.RetrySetting.Delay,
+                        retryCount: _workflowConfiguration.RetrySetting.RetryCount,
+                        delay: _workflowConfiguration.RetrySetting.Delay,
                         cancellationToken);
 
                     lastResult = activityResult.Value;
                 }
                 catch (Exception exception)
                 {
-                    var message = $"Error on executin Activity with Id={activity.Configuration.ActivityId}";
+                    var message = $"Error on executing Activity with Id={activity.Configuration.ActivityId}";
+                    //todo log through context
                     _logger.LogError(exception, message);
                     throw new Exception(message, exception);
                 }
             }
         }
 
-        public bool IsValid()
+        public async Task ContinueWithAsync(ActivityData result, CancellationToken cancellationToken)
         {
-            var activities = Activities.Select(x => x.Value);
-            return activities.ValidateBranchStartEnd() && activities.ValidateInnerBranches();
+            
         }
+
+        public bool IsValid() => Activities.ValidateBranchStartEnd() && Activities.ValidateInnerBranches();
 
         private ActivityData MergeInitialData(ActivityData activityData)
         {
