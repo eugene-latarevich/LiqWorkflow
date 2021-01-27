@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LiqWorkflow.Abstractions;
@@ -7,6 +8,7 @@ using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Events;
 using LiqWorkflow.Abstractions.Models;
 using LiqWorkflow.Abstractions.Models.Configurations;
+using LiqWorkflow.Common.Extensions;
 
 namespace LiqWorkflow.Activities
 {
@@ -40,11 +42,7 @@ namespace LiqWorkflow.Activities
                 
                 var processingData = MergeInitialData(initialData, data);
 
-                MessageOnStartActivity(processingData);
-                var result = await _activity.ExecuteAsync(processingData, cancellationToken);
-
-                await ProcessResultAsync(result, cancellationToken);
-                MessageOnFinishActivity(result);
+                var result = await GetAndProcessResultAsync(processingData, cancellationToken);
 
                 return result.Succeeded ? result : ProcessErrorResult(result.Exception);
             }
@@ -63,6 +61,36 @@ namespace LiqWorkflow.Activities
         protected abstract Task<ActivityData> LoadInitialDataAsync(CancellationToken cancellationToken);
 
         protected abstract ActivityData MergeInitialData(ActivityData initialData, ActivityData data);
+
+        private async Task<WorkflowResult<ActivityData>> GetAndProcessResultAsync(ActivityData data, CancellationToken cancellationToken)
+        {
+            MessageOnStartActivity(data);
+            var result = await _activity.ExecuteAsync(data, cancellationToken);
+
+            await SendToConnectedBranchesAsync(result, cancellationToken);
+
+            await ProcessResultAsync(result, cancellationToken);
+            MessageOnFinishActivity(result);
+
+            return result;
+        }
+
+        private async Task SendToConnectedBranchesAsync(WorkflowResult<ActivityData> result, CancellationToken cancellationToken)
+        {
+            if (result.Succeeded && Branches != null)
+            {
+                await Branches
+                    .Select(x => x.Value)
+                    .ForEachAsync(async branch =>
+                    {
+                        if (branch is IWorkflowBranchContinuation continuation)
+                        {
+                            await continuation.ContinueWithAsync(result.Value, cancellationToken);
+                        }
+                    })
+                    .ConfigureAwait(false);
+            }
+        }
 
         private void MessageOnStartActivity(ActivityData data)
         {
