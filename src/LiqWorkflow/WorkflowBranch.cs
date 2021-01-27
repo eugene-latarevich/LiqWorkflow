@@ -8,43 +8,46 @@ using LiqWorkflow.Abstractions.Models;
 using LiqWorkflow.Activities;
 using LiqWorkflow.Common.Extensions;
 using LiqWorkflow.Common.Helpers;
-using Microsoft.Extensions.Logging;
 
 namespace LiqWorkflow
 {
     // TODO
-    // get and store initial data
-    // get and store results
     // send data to context
     public class WorkflowBranch : IWorkflowBranch, IWorkflowBranchContinuation
     {
         private readonly IWorkflowConfiguration _workflowConfiguration;
-        private readonly ILogger<WorkflowBranch> _logger;
 
         public WorkflowBranch(
             IWorkflowConfiguration workflowConfiguration,
-            ImmutableDictionary<string, IWorkflowActivity> activities,
-            ILogger<WorkflowBranch> logger)
+            ImmutableDictionary<string, IWorkflowActivity> activities)
         {
             _workflowConfiguration = workflowConfiguration;
-            _logger = logger;
 
             Activities = new OrderedActivityCollection(activities);
         }
 
         public IOrderedActivityCollection Activities { get; }
 
-        public async Task PulseAsync(CancellationToken cancellationToken)
+        public Task PulseAsync(CancellationToken cancellationToken) => ProcessActivitiesAsync(null, Activities, cancellationToken);
+
+        public Task ContinueWithAsync(ActivityData initialData, CancellationToken cancellationToken)
         {
-            ActivityData lastResult = null;
-            foreach (var activity in Activities)
+            var clonedActivities = Activities.Clone().StartFrom(initialData.ActivityToId);
+            return ProcessActivitiesAsync(initialData, clonedActivities, cancellationToken);
+        }
+
+        public bool IsValid() => Activities.ValidateBranchStartEnd() && Activities.ValidateInnerBranches();
+
+        private async Task ProcessActivitiesAsync(ActivityData initialData, IOrderedActivityCollection activities, CancellationToken cancellationToken)
+        {
+            ActivityData lastResult = initialData;
+            foreach (var activity in activities)
             {
                 try
                 {
-                    var activityData = MergeInitialData(lastResult);
                     var activityResult = await TaskHelper.RetryOnConditionOrException(
                         condition: result => result.Succeeded,
-                        retryFunc: () => activity.ExecuteAsync(activityData, cancellationToken),
+                        retryFunc: () => activity.ExecuteAsync(lastResult, cancellationToken),
                         retryCount: _workflowConfiguration.RetrySetting.RetryCount,
                         delay: _workflowConfiguration.RetrySetting.Delay,
                         cancellationToken);
@@ -55,22 +58,10 @@ namespace LiqWorkflow
                 {
                     var message = $"Error on executing Activity with Id={activity.Configuration.ActivityId}";
                     //todo log through context
-                    _logger.LogError(exception, message);
+                    //_logger.LogError(exception, message);
                     throw new Exception(message, exception);
                 }
             }
-        }
-
-        public async Task ContinueWithAsync(ActivityData result, CancellationToken cancellationToken)
-        {
-            
-        }
-
-        public bool IsValid() => Activities.ValidateBranchStartEnd() && Activities.ValidateInnerBranches();
-
-        private ActivityData MergeInitialData(ActivityData activityData)
-        {
-            return activityData;
         }
     }
 }

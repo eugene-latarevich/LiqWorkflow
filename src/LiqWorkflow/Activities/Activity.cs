@@ -9,11 +9,11 @@ using LiqWorkflow.Abstractions.Models.Configurations;
 
 namespace LiqWorkflow.Activities
 {
-    public class Activity : IWorkflowActivity
+    public abstract class Activity : IWorkflowActivity
     {
         private readonly IWorkflowActivity _activity;
 
-        public Activity(IWorkflowActivity activity)
+        protected Activity(IWorkflowActivity activity)
         {
             _activity = activity;
 
@@ -31,7 +31,11 @@ namespace LiqWorkflow.Activities
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var result = await _activity.ExecuteAsync(data, cancellationToken);
+                var initialData = await LoadInitialDataAsync(cancellationToken);
+                
+                var processingData = MergeInitialData(initialData, data);
+
+                var result = await _activity.ExecuteAsync(processingData, cancellationToken);
 
                 return result;
             }
@@ -44,6 +48,10 @@ namespace LiqWorkflow.Activities
                 return ProcessErrorResult(exception);
             }
         }
+
+        protected abstract Task<ActivityData> LoadInitialDataAsync(CancellationToken cancellationToken);
+
+        protected abstract ActivityData MergeInitialData(ActivityData initialData, ActivityData data);
 
         private WorkflowResult<ActivityData> ProcessErrorResult(Exception exception)
         {

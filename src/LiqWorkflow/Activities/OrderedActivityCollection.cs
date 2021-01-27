@@ -9,7 +9,10 @@ namespace LiqWorkflow.Activities
 {
     public class OrderedActivityCollection : IOrderedActivityCollection
     {
-        public IDictionary<string, IWorkflowActivity> _activities = new Dictionary<string, IWorkflowActivity>();
+        private readonly IDictionary<string, IWorkflowActivity> _activities = new Dictionary<string, IWorkflowActivity>();
+
+        private bool _canStartFrom = true;
+        private int _startFrom = 0;
 
         public OrderedActivityCollection(ImmutableDictionary<string, IWorkflowActivity> activities)
         {
@@ -18,10 +21,35 @@ namespace LiqWorkflow.Activities
 
         public IWorkflowActivity this[string activityId] => _activities[activityId];
 
+        public IOrderedActivityCollection Clone()
+        {
+            var activities = _activities.Select(x => x).ToImmutableDictionary();
+            return new OrderedActivityCollection(activities);
+        }
+
+        public IOrderedActivityCollection StartFrom(string activityId)
+        {
+            var activity = _activities
+                .Where(x => x.Key == activityId)
+                .Select(x => x.Value)
+                .FirstOrDefault();
+
+            if (activity == null)
+            {
+                throw new NotFoundException("Start From activity wasn't found");
+            }
+            
+            _startFrom = _activities.Select(x => x.Key).ToList().IndexOf(activityId);
+
+            return this;
+        }
+
         public IEnumerator<IWorkflowActivity> GetEnumerator()
         {
-            foreach (var keyActivityPair in _activities)
+            foreach (var keyActivityPair in _activities.Skip(_canStartFrom ? _startFrom - 1 : 0))
             {
+                _canStartFrom = false;
+
                 yield return keyActivityPair.Value;
             }
         }
