@@ -31,7 +31,7 @@ namespace LiqWorkflow.Factories
 
                 var branchActivities = CreateBranchActivities(configuration.WithProcesingBranchData(branchData));
 
-                var branch = (IWorkflowBranch)Activator.CreateInstance(branchData.Type, branchData.Configuration, branchActivities.ToDictionary(x => x.Configuration.ActivityId), _workflowMessageEventBroker);
+                var branch = (IWorkflowBranch)Activator.CreateInstance(branchData.Type, configuration.WorkflowConfiguration, branchData.Configuration, branchActivities.ToDictionary(x => x.Configuration.ActivityId), _workflowMessageEventBroker);
                 
                 configuration.Branches.Add(branch);
             }

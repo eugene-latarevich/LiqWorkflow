@@ -55,7 +55,7 @@ namespace LiqWorkflow.Builders
         {
             var messageEventBroker = _serviceProvider.GetService<IWorkflowMessageEventBroker>();
 
-            var branches = _workflowBranchFactory.BuildConnected(new ConnectedBranchesConfiguration(_activitiesData, _branchesData));
+            var branches = _workflowBranchFactory.BuildConnected(new ConnectedBranchesConfiguration(_workflowConfiguration, _activitiesData, _branchesData));
 
             return new Workflow(_workflowConfiguration, branches, messageEventBroker);
         }

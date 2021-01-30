@@ -9,12 +9,16 @@ namespace LiqWorkflow.Abstractions.Models.Factories
     {
         private readonly IEnumerable<CreatingBranchConfiguration> _branchesData;
 
-        public ConnectedBranchesConfiguration(IEnumerable<CreatingActivityConfiguration> activitiesData, IEnumerable<CreatingBranchConfiguration> branchesData)
+        public ConnectedBranchesConfiguration(
+            IWorkflowConfiguration workflowConfiguration,
+            IEnumerable<CreatingActivityConfiguration> activitiesData, 
+            IEnumerable<CreatingBranchConfiguration> branchesData)
         {
             _branchesData = branchesData.OrderBy(x => x.Configuration.Order);
             
             ActivitiesData = activitiesData;
 
+            WorkflowConfiguration = workflowConfiguration;
             Branches = new List<IWorkflowBranch>(branchesData.Count());
             Activities = new List<IWorkflowActivity>(branchesData.Count());
         }
@@ -25,6 +29,8 @@ namespace LiqWorkflow.Abstractions.Models.Factories
         public ICollection<IWorkflowBranch> Branches { get; }
 
         public CreatingBranchConfiguration ProcessingBranchData { get; private set; }
+
+        public IWorkflowConfiguration WorkflowConfiguration { get; }
 
         public IEnumerable<CreatingBranchConfiguration> BranchesData
         {
