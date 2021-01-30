@@ -1,6 +1,6 @@
 ﻿using LiqWorkflow.Abstractions.Activities;
 
-namespace LiqWorkflow.Abstractions.Builder
+namespace LiqWorkflow.Abstractions.Builders
 {
     public interface IWorkflowBuilder
     {

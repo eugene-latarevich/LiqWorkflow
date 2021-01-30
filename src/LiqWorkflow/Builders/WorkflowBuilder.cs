@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using LiqWorkflow.Abstractions;
 using LiqWorkflow.Abstractions.Activities;
-using LiqWorkflow.Abstractions.Builder;
+using LiqWorkflow.Abstractions.Builders;
 using LiqWorkflow.Abstractions.Events;
 using LiqWorkflow.Abstractions.Factories;
 using LiqWorkflow.Abstractions.Models.Builder;
 using LiqWorkflow.Abstractions.Models.Factories;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LiqWorkflow.Builder
+namespace LiqWorkflow.Builders
 {
     public class WorkflowBuilder : IWorkflowBuilder
     {
