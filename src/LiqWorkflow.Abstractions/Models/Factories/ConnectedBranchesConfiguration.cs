@@ -41,14 +41,14 @@ namespace LiqWorkflow.Abstractions.Models.Factories
         }
         public IEnumerable<CreatingActivityConfiguration> ActivitiesData { get; }
 
-        public ConnectedBranchesConfiguration WithBranchData(CreatingBranchConfiguration configuration)
+        public ConnectedBranchesConfiguration WithProcesingBranchData(CreatingBranchConfiguration configuration)
         {
             ProcessingBranchData = configuration;
 
             return this;
         }
 
-        public ConnectedBranchesConfiguration WithActivity(string activityId)
+        public ConnectedBranchesConfiguration ForActivity(string activityId)
         {
             ProcessingActivityId = activityId;
 

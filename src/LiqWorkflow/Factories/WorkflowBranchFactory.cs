@@ -29,7 +29,7 @@ namespace LiqWorkflow.Factories
                     continue;
                 }
 
-                var branchActivities = CreateBranchActivities(configuration.WithBranchData(branchData));
+                var branchActivities = CreateBranchActivities(configuration.WithProcesingBranchData(branchData));
 
                 var branch = (IWorkflowBranch)Activator.CreateInstance(branchData.Type, branchData.Configuration, branchActivities.ToDictionary(x => x.Configuration.ActivityId), _workflowMessageEventBroker);
                 
@@ -84,7 +84,7 @@ namespace LiqWorkflow.Factories
         {
             if (activityData.Configuration.Transition.HasChildBranches)
             {
-                BuildConnected(configuration.WithActivity(activityData.Configuration.ActivityId));
+                BuildConnected(configuration.ForActivity(activityData.Configuration.ActivityId));
 
                 var activityBranches = configuration.Branches.Where(branch => activityData.BranchIds.Contains(branch.Configuration.BranchId));
 
