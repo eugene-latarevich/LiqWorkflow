@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using LiqWorkflow.Abstractions;
@@ -18,15 +18,19 @@ namespace LiqWorkflow
         private readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
 
         public WorkflowBranch(
+            IBranchConfiguration branchConfiguration,
             IWorkflowConfiguration workflowConfiguration,
             IWorkflowMessageEventBroker workflowMessageEventBroker,
-            ImmutableDictionary<string, IWorkflowActivity> activities)
+            IDictionary<string, IWorkflowActivity> activities)
         {
             _workflowConfiguration = workflowConfiguration;
             _workflowMessageEventBroker = workflowMessageEventBroker;
 
+            Configuration = branchConfiguration;
             Activities = new OrderedActivityCollection(activities);
         }
+
+        public IBranchConfiguration Configuration { get; }
 
         public IOrderedActivityCollection Activities { get; }
 

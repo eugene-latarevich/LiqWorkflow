@@ -35,7 +35,7 @@ namespace LiqWorkflow
 
         public async Task<WorkflowResult> StartAsync()
         {
-            await _semaphoreSlim.WaitAsync();
+            await _semaphoreSlim.WaitAsync(Configuration.CancellationTokenSource.Token);
             try
             {
                 ThrowIfNotValidConfiguration();
@@ -63,7 +63,7 @@ namespace LiqWorkflow
 
         public async Task<WorkflowResult> StopAsync()
         {
-            await _semaphoreSlim.WaitAsync();
+            await _semaphoreSlim.WaitAsync(Configuration.CancellationTokenSource.Token);
             try
             {
                 Status = WorkflowStatus.Stopping;

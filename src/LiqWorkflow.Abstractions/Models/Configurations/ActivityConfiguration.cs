@@ -1,6 +1,8 @@
-﻿namespace LiqWorkflow.Abstractions.Models.Configurations
+﻿using LiqWorkflow.Abstractions.Activities;
+
+namespace LiqWorkflow.Abstractions.Models.Configurations
 {
-    public class ActivityConfiguration
+    public class ActivityConfiguration : IActivityConfiguration
     {
         public ActivityConfiguration(
             string activityId, 

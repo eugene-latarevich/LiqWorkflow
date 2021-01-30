@@ -21,5 +21,17 @@ namespace LiqWorkflow.Common.Extensions
                 await func(item);
             }
         }
+
+        public static IDictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<TValue> source, Func<TValue, TKey> withKey)
+        {
+            var result = new Dictionary<TKey, TValue>();
+            foreach (var value in source)
+            {
+                var key = withKey(value);
+                result.Add(key, value);
+            }
+
+            return result;
+        }
     }
 }

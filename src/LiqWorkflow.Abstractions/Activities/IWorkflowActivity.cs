@@ -1,17 +1,11 @@
 ﻿using System.Collections.Immutable;
-using System.Threading;
-using System.Threading.Tasks;
-using LiqWorkflow.Abstractions.Models;
-using LiqWorkflow.Abstractions.Models.Configurations;
 
 namespace LiqWorkflow.Abstractions.Activities
 {
-    public interface IWorkflowActivity
+    public interface IWorkflowActivity : IWorkflowActivityAction
     {
-        ActivityConfiguration Configuration { get; }
+        IActivityConfiguration Configuration { get; }
 
         ImmutableDictionary<string, IWorkflowBranch> Branches { get; }
-
-        Task<WorkflowResult<ActivityData>> ExecuteAsync(ActivityData data, CancellationToken cancellationToken = default);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -7,39 +8,42 @@ using LiqWorkflow.Abstractions;
 using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Events;
 using LiqWorkflow.Abstractions.Models;
-using LiqWorkflow.Abstractions.Models.Configurations;
 using LiqWorkflow.Common.Extensions;
 
 namespace LiqWorkflow.Activities
 {
     public abstract class Activity : IWorkflowActivity
     {
-        private readonly IWorkflowActivity _activity;
+        private readonly IWorkflowActivityAction _action;
         private readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
+        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
         protected Activity(
-            IWorkflowActivity activity,
+            IWorkflowActivityAction action,
+            IActivityConfiguration configuration,
+            IDictionary<string, IWorkflowBranch> branches,
             IWorkflowMessageEventBroker workflowMessageEventBroker)
         {
-            _activity = activity;
+            _action = action;
             _workflowMessageEventBroker = workflowMessageEventBroker;
 
-            Configuration = activity.Configuration;
-            Branches = activity.Branches;
+            Configuration = configuration;
+            Branches = branches.ToImmutableDictionary();
         }
 
-        public ActivityConfiguration Configuration { get; }
+        public IActivityConfiguration Configuration { get; }
 
         public ImmutableDictionary<string, IWorkflowBranch> Branches { get; }
 
         public async Task<WorkflowResult<ActivityData>> ExecuteAsync(ActivityData data, CancellationToken cancellationToken = default)
         {
+            await _semaphoreSlim.WaitAsync(cancellationToken);
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var initialData = await LoadInitialDataAsync(cancellationToken);
-                
+
                 var processingData = MergeInitialData(initialData, data);
 
                 var result = await GetAndProcessResultAsync(processingData, cancellationToken);
@@ -54,6 +58,10 @@ namespace LiqWorkflow.Activities
             {
                 return ProcessErrorResult(exception);
             }
+            finally
+            {
+                _semaphoreSlim.Release();
+            }
         }
 
         protected abstract Task ProcessResultAsync(WorkflowResult<ActivityData> result, CancellationToken cancellationToken);
@@ -65,7 +73,7 @@ namespace LiqWorkflow.Activities
         private async Task<WorkflowResult<ActivityData>> GetAndProcessResultAsync(ActivityData data, CancellationToken cancellationToken)
         {
             MessageOnStartActivity(data);
-            var result = await _activity.ExecuteAsync(data, cancellationToken);
+            var result = await _action.ExecuteAsync(data, cancellationToken);
 
             await SendToConnectedBranchesAsync(result, cancellationToken);
 
@@ -83,9 +91,9 @@ namespace LiqWorkflow.Activities
                     .Select(x => x.Value)
                     .ForEachAsync(async branch =>
                     {
-                        if (branch is IWorkflowBranchContinuation continuation)
+                        if (branch is IWorkflowBranchContinuation continuationBranch)
                         {
-                            await continuation.ContinueWithAsync(result.Value, cancellationToken);
+                            await continuationBranch.ContinueWithAsync(result.Value, cancellationToken);
                         }
                     })
                     .ConfigureAwait(false);

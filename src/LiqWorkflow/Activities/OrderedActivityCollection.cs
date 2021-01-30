@@ -14,7 +14,7 @@ namespace LiqWorkflow.Activities
         private int _startFrom;
         private bool _canStartFrom = true;
 
-        public OrderedActivityCollection(ImmutableDictionary<string, IWorkflowActivity> activities)
+        public OrderedActivityCollection(IDictionary<string, IWorkflowActivity> activities)
         {
             CreateOrderedActivities(activities);
         }
@@ -56,7 +56,7 @@ namespace LiqWorkflow.Activities
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        private void CreateOrderedActivities(ImmutableDictionary<string, IWorkflowActivity> activities)
+        private void CreateOrderedActivities(IDictionary<string, IWorkflowActivity> activities)
         {
             for (int x = 0; x < activities.Count; x++)
             {
