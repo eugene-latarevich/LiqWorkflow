@@ -10,6 +10,7 @@ using LiqWorkflow.Abstractions.Models;
 using LiqWorkflow.Activities;
 using LiqWorkflow.Common.Extensions;
 using LiqWorkflow.Common.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LiqWorkflow.Branches
 {
@@ -21,11 +22,10 @@ namespace LiqWorkflow.Branches
         public WorkflowBranch(
             IBranchConfiguration branchConfiguration,
             IWorkflowConfiguration workflowConfiguration,
-            IWorkflowMessageEventBroker workflowMessageEventBroker,
             IDictionary<string, IWorkflowActivity> activities)
         {
             _workflowConfiguration = workflowConfiguration;
-            _workflowMessageEventBroker = workflowMessageEventBroker;
+            _workflowMessageEventBroker = workflowConfiguration.ServiceProvider.GetService<IWorkflowMessageEventBroker>();
 
             Configuration = branchConfiguration;
             Activities = new OrderedActivityCollection(activities);

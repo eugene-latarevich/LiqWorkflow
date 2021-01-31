@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using LiqWorkflow.Abstractions.Models.Settings;
 
 namespace LiqWorkflow.Abstractions
@@ -12,5 +13,7 @@ namespace LiqWorkflow.Abstractions
         RetrySetting RetrySetting { get; }
 
         CancellationTokenSource CancellationTokenSource { get; }
+
+        IServiceProvider ServiceProvider { get; }
     }
 }

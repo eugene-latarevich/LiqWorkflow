@@ -16,5 +16,18 @@ namespace LiqWorkflow.Abstractions.Models
         public string ActivityToId { get; }
 
         public IDictionary<string, ActivityDataValue> Values { get; }
+
+        public ActivityData Map(ActivityData data)
+        {
+            foreach (var value in Values)
+            {
+                if (!data.Values.ContainsKey(value.Key))
+                {
+                    data.Values.Add(value);
+                }
+            }
+
+            return this;
+        }
     }
 }

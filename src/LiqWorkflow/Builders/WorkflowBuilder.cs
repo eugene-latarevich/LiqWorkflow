@@ -21,12 +21,10 @@ namespace LiqWorkflow.Builders
 
         private IWorkflowConfiguration _workflowConfiguration;
 
-        public WorkflowBuilder(
-            IServiceProvider serviceProvider,
-            IWorkflowBranchFactory workflowBranchFactory)
+        public WorkflowBuilder(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _workflowBranchFactory = workflowBranchFactory;
+            _workflowBranchFactory = _serviceProvider.GetService<IWorkflowBranchFactory>();
         }
 
         public IWorkflowBuilder WithConfiguration(IWorkflowConfiguration configuration)

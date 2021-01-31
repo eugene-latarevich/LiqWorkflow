@@ -4,7 +4,7 @@ using LiqWorkflow.Abstractions.Models;
 
 namespace LiqWorkflow.Abstractions.Activities
 {
-    public interface IWorkflowActivityAction
+    public interface IWorkflowExecutableActivity : IWorkflowActivity
     {
         Task<WorkflowResult<ActivityData>> ExecuteAsync(ActivityData data, CancellationToken cancellationToken = default);
     }

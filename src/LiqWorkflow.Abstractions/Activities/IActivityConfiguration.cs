@@ -1,4 +1,5 @@
-﻿using LiqWorkflow.Abstractions.Models.Configurations;
+﻿using System;
+using LiqWorkflow.Abstractions.Models.Configurations;
 
 namespace LiqWorkflow.Abstractions.Activities
 {
@@ -11,5 +12,7 @@ namespace LiqWorkflow.Abstractions.Activities
         bool IsBranchFinishPoint { get; }
 
         ActivityTransition Transition { get; }
+
+        IServiceProvider ServiceProvider { get; }
     }
 }

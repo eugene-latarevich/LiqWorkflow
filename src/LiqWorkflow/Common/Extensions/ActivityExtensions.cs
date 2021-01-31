@@ -41,5 +41,8 @@ namespace LiqWorkflow.Common.Extensions
 
             return true;
         }
+
+        public static string GetActivityToId(this KeyValuePair<string, IWorkflowActivity> keyActivityPair)
+            => keyActivityPair.Value.Configuration.Transition.ActivityToId;
     }
 }

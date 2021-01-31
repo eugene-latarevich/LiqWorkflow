@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Branches;
 using LiqWorkflow.Abstractions.Events;
@@ -12,20 +13,19 @@ using LiqWorkflow.Common.Extensions;
 
 namespace LiqWorkflow.Activities
 {
-    public abstract class Activity : IWorkflowActivity
+    public abstract class Activity : IWorkflowExecutableActivity
     {
-        private readonly IWorkflowActivityAction _action;
+        private readonly IWorkflowExecutableActivity _action;
         private readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
         protected Activity(
-            IWorkflowActivityAction action,
+            IWorkflowExecutableActivity action,
             IActivityConfiguration configuration,
-            IDictionary<string, IWorkflowBranch> branches,
-            IWorkflowMessageEventBroker workflowMessageEventBroker)
+            IDictionary<string, IWorkflowBranch> branches)
         {
             _action = action;
-            _workflowMessageEventBroker = workflowMessageEventBroker;
+            _workflowMessageEventBroker = configuration.ServiceProvider.GetService<IWorkflowMessageEventBroker>();
 
             Configuration = configuration;
             Branches = branches.ToImmutableDictionary();
@@ -68,7 +68,7 @@ namespace LiqWorkflow.Activities
 
         protected abstract Task<ActivityData> LoadInitialDataAsync(CancellationToken cancellationToken);
 
-        protected abstract ActivityData MergeInitialData(ActivityData initialData, ActivityData data);
+        protected virtual ActivityData MergeInitialData(ActivityData initialData, ActivityData data) => initialData.Map(data);
 
         private async Task<WorkflowResult<ActivityData>> GetAndProcessResultAsync(ActivityData data, CancellationToken cancellationToken)
         {

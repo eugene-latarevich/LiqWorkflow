@@ -24,11 +24,10 @@ namespace LiqWorkflow.Abstractions.Models.Factories
             Activities = new List<IWorkflowActivity>(branchesData.Count());
         }
 
-        public string ProcessingActivityId { get; private set; }
-
         public ICollection<IWorkflowActivity> Activities { get; }
         public ICollection<IWorkflowBranch> Branches { get; }
 
+        public string ProcessingActivityId { get; private set; }
         public CreatingBranchConfiguration ProcessingBranchData { get; private set; }
 
         public IWorkflowConfiguration WorkflowConfiguration { get; }

@@ -2,7 +2,7 @@
 
 namespace LiqWorkflow.Abstractions.Activities
 {
-    public interface IOrderedActivityCollection : IEnumerable<IWorkflowActivity>
+    public interface IOrderedActivityCollection : IEnumerable<IWorkflowExecutableActivity>
     {
         IOrderedActivityCollection Clone();
 

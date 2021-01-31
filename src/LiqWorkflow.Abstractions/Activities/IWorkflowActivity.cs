@@ -3,7 +3,7 @@ using LiqWorkflow.Abstractions.Branches;
 
 namespace LiqWorkflow.Abstractions.Activities
 {
-    public interface IWorkflowActivity : IWorkflowActivityAction
+    public interface IWorkflowActivity
     {
         IActivityConfiguration Configuration { get; }
 

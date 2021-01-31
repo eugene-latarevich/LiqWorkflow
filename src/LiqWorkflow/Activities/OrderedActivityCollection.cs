@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using LiqWorkflow.Abstractions.Activities;
+using LiqWorkflow.Common.Extensions;
 using LiqWorkflow.Exceptions;
 
 namespace LiqWorkflow.Activities
@@ -16,6 +18,7 @@ namespace LiqWorkflow.Activities
 
         public OrderedActivityCollection(IDictionary<string, IWorkflowActivity> activities)
         {
+            ThrowIfAnyActivityNotExecutable(activities);
             CreateOrderedActivities(activities);
         }
 
@@ -29,10 +32,7 @@ namespace LiqWorkflow.Activities
 
         public IOrderedActivityCollection StartFrom(string activityId)
         {
-            var activity = _activities
-                .Where(x => x.Key == activityId)
-                .Select(x => x.Value)
-                .FirstOrDefault();
+            var activity = _activities.Where(x => x.Key == activityId).Select(x => x.Value).FirstOrDefault();
 
             if (activity == null)
             {
@@ -44,44 +44,52 @@ namespace LiqWorkflow.Activities
             return this;
         }
 
-        public IEnumerator<IWorkflowActivity> GetEnumerator()
+        public IEnumerator<IWorkflowExecutableActivity> GetEnumerator()
         {
             foreach (var keyActivityPair in _activities.Skip(_canStartFrom ? _startFrom - 1 : 0))
             {
                 _canStartFrom = false;
 
-                yield return keyActivityPair.Value;
+                if (keyActivityPair.Value is IWorkflowExecutableActivity executableActivity)
+                {
+                    yield return executableActivity;
+                }
             }
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        private void ThrowIfAnyActivityNotExecutable(IDictionary<string, IWorkflowActivity> activities)
+        {
+            activities
+                .Select(x =>x.Value)
+                .ForEach(activity =>
+                {
+                    if (!(activity is IWorkflowExecutableActivity))
+                    {
+                        throw new UnknownTypeException($"Activity must be executable {typeof(IWorkflowExecutableActivity)}. ActivityId={activity.Configuration.ActivityId}");
+                    }
+                });
+        }
+
         private void CreateOrderedActivities(IDictionary<string, IWorkflowActivity> activities)
         {
+            KeyValuePair<string, IWorkflowActivity> keyActivityPair = default;
+
             for (int x = 0; x < activities.Count; x++)
             {
-                KeyValuePair<string, IWorkflowActivity> keyActivityPair = default;
-
-                if (x == 0)
-                {
-                    keyActivityPair = activities.FirstOrDefault(z => z.Value.Configuration.IsBranchStartPoint);
-                    if (keyActivityPair.Value == null)
-                    {
-                        throw new NotFoundException("Start activity wasn't found");
-                    }
-                }
-                else
-                {
-                    var toActivityId = keyActivityPair.Value.Configuration.Transition.ActivityToId;
-                    keyActivityPair = activities.FirstOrDefault(z => z.Value.Configuration.ActivityId == toActivityId);
-                    if (keyActivityPair.Value == null)
-                    {
-                        throw new NotFoundException("Continuation activity wasn't found");
-                    }
-                }
+                keyActivityPair = x == 0 
+                    ? FindActivity(activities, z => z.Value.Configuration.IsBranchStartPoint) 
+                    : FindActivity(activities, z => z.Value.Configuration.ActivityId == keyActivityPair.GetActivityToId());
 
                 _activities.Add(keyActivityPair);
             }
+        }
+
+        private KeyValuePair<string, IWorkflowActivity> FindActivity(IDictionary<string, IWorkflowActivity> activities, Func<KeyValuePair<string, IWorkflowActivity>, bool> predicate)
+        {
+            var keyActivityPair = activities.FirstOrDefault(predicate);
+            return keyActivityPair.Value == null ? throw new NotFoundException("Activity wasn't found") : keyActivityPair;
         }
     }
 }

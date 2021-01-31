@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Branches;
-using LiqWorkflow.Abstractions.Events;
 using LiqWorkflow.Abstractions.Factories;
 using LiqWorkflow.Abstractions.Models.Builder;
 using LiqWorkflow.Abstractions.Models.Factories;
@@ -13,11 +12,9 @@ namespace LiqWorkflow.Factories
 {
     class WorkflowBranchFactory : IWorkflowBranchFactory
     {
-        private readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
-
-        public WorkflowBranchFactory(IWorkflowMessageEventBroker workflowMessageEventBroker)
+        public WorkflowBranchFactory()
         {
-            _workflowMessageEventBroker = workflowMessageEventBroker;
+            
         }
 
         public IEnumerable<IWorkflowBranch> BuildConnected(ConnectedBranchesConfiguration configuration)
@@ -31,7 +28,7 @@ namespace LiqWorkflow.Factories
 
                 var branchActivities = CreateBranchActivities(configuration.WithProcesingBranchData(branchData));
 
-                var branch = (IWorkflowBranch)Activator.CreateInstance(branchData.Type, configuration.WorkflowConfiguration, branchData.Configuration, branchActivities.ToDictionary(x => x.Configuration.ActivityId), _workflowMessageEventBroker);
+                var branch = (IWorkflowBranch)Activator.CreateInstance(branchData.Type, configuration.WorkflowConfiguration, branchData.Configuration, branchActivities.ToDictionary(x => x.Configuration.ActivityId));
                 
                 configuration.Branches.Add(branch);
             }
@@ -54,7 +51,7 @@ namespace LiqWorkflow.Factories
                 
                 var activityChildBranches = GetOrCreateActivityBranches(activityData, configuration);
 
-                var activity = (IWorkflowActivity)Activator.CreateInstance(activityData.Type, activityData.Configuration, activityChildBranches.ToDictionary(x => x.Configuration.BranchId), _workflowMessageEventBroker);
+                var activity = (IWorkflowActivity)Activator.CreateInstance(activityData.Type, activityData.Configuration, activityChildBranches.ToDictionary(x => x.Configuration.BranchId));
 
                 configuration.Activities.Add(activity);
             }
