@@ -4,13 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using LiqWorkflow.Abstractions;
 using LiqWorkflow.Abstractions.Activities;
+using LiqWorkflow.Abstractions.Branches;
 using LiqWorkflow.Abstractions.Events;
 using LiqWorkflow.Abstractions.Models;
 using LiqWorkflow.Activities;
 using LiqWorkflow.Common.Extensions;
 using LiqWorkflow.Common.Helpers;
 
-namespace LiqWorkflow
+namespace LiqWorkflow.Branches
 {
     public class WorkflowBranch : IWorkflowBranch, IWorkflowBranchContinuation
     {

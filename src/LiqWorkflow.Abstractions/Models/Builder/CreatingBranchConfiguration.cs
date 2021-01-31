@@ -1,4 +1,5 @@
 ﻿using System;
+using LiqWorkflow.Abstractions.Branches;
 
 namespace LiqWorkflow.Abstractions.Models.Builder
 {

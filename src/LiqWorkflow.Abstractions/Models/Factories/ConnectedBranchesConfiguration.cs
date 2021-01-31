@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using LiqWorkflow.Abstractions.Activities;
+using LiqWorkflow.Abstractions.Branches;
 using LiqWorkflow.Abstractions.Models.Builder;
 
 namespace LiqWorkflow.Abstractions.Models.Factories

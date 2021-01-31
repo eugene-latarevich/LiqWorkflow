@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using LiqWorkflow.Abstractions;
 using LiqWorkflow.Abstractions.Activities;
+using LiqWorkflow.Abstractions.Branches;
 using LiqWorkflow.Abstractions.Builders;
 using LiqWorkflow.Abstractions.Events;
 using LiqWorkflow.Abstractions.Factories;

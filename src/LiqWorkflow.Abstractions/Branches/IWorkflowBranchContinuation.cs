@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using LiqWorkflow.Abstractions.Models;
 
-namespace LiqWorkflow.Abstractions
+namespace LiqWorkflow.Abstractions.Branches
 {
     public interface IWorkflowBranchContinuation
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using LiqWorkflow.Abstractions.Models.Configurations;
 
-namespace LiqWorkflow.Abstractions
+namespace LiqWorkflow.Abstractions.Branches
 {
     public interface IBranchConfiguration
     {
