@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Branches;
-using LiqWorkflow.Abstractions.Factories;
 using LiqWorkflow.Abstractions.Models.Builder;
 using LiqWorkflow.Abstractions.Models.Factories;
 using LiqWorkflow.Exceptions;
 
-namespace LiqWorkflow.Factories
+namespace LiqWorkflow.Branches
 {
     class WorkflowBranchFactory : IWorkflowBranchFactory
     {

@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using LiqWorkflow.Abstractions;
 using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Branches;
-using LiqWorkflow.Abstractions.Builders;
 using LiqWorkflow.Abstractions.Events;
-using LiqWorkflow.Abstractions.Factories;
 using LiqWorkflow.Abstractions.Models.Builder;
 using LiqWorkflow.Abstractions.Models.Factories;
+using LiqWorkflow.Branches;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LiqWorkflow.Builders
+namespace LiqWorkflow
 {
-    public class WorkflowBuilder : IWorkflowBuilder
+    class WorkflowBuilder : IWorkflowBuilder
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IWorkflowBranchFactory _workflowBranchFactory;
@@ -35,17 +34,23 @@ namespace LiqWorkflow.Builders
         }
 
         public IWorkflowBuilder WithBranch<TBranch>(IBranchConfiguration configuration)
-            where TBranch : class, IWorkflowBranch
+            where TBranch : class, IWorkflowBranch 
+                => WithBranch(typeof(TBranch), configuration);
+
+        public IWorkflowBuilder WithBranch(Type type, IBranchConfiguration configuration)
         {
-            _branchesData.Add(new CreatingBranchConfiguration{Type = typeof(TBranch), Configuration = configuration});
+            _branchesData.Add(new CreatingBranchConfiguration{Type = type, Configuration = configuration});
 
             return this;
         }
 
         public IWorkflowBuilder WithActivity<TActivity>(IActivityConfiguration configuration)
             where TActivity : class, IWorkflowActivity
+                => WithActivity(typeof(TActivity), configuration);
+
+        public IWorkflowBuilder WithActivity(Type type, IActivityConfiguration configuration)
         {
-            _activitiesData.Add(new CreatingActivityConfiguration{Type = typeof(TActivity), Configuration = configuration});
+            _activitiesData.Add(new CreatingActivityConfiguration{Type = type, Configuration = configuration});
 
             return this;
         }

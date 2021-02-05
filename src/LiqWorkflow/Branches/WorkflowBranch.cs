@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace LiqWorkflow.Branches
 {
-    public class WorkflowBranch : IWorkflowBranch, IWorkflowBranchContinuation
+    class WorkflowBranch : IWorkflowBranch, IWorkflowBranchContinuation
     {
         private readonly IWorkflowConfiguration _workflowConfiguration;
         private readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;

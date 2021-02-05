@@ -13,7 +13,7 @@ using LiqWorkflow.Exceptions;
 
 namespace LiqWorkflow
 {
-    public class Workflow : IWorkflow, IDisposable
+    class Workflow : IWorkflow, IDisposable
     {
         private readonly IEnumerable<IWorkflowBranch> _branches;
         private readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
