@@ -43,7 +43,9 @@ namespace LiqWorkflow
 
                 Status = WorkflowStatus.Starting;
 
-                await _branches.ForEachAsync(branch => branch.PulseAsync(Configuration.CancellationTokenSource.Token));
+                await _branches
+                    .ForEachAsync(branch => branch.PulseAsync(Configuration.CancellationTokenSource.Token))
+                    .ConfigureAwait(false);
 
                 Status = WorkflowStatus.Executing;
 
@@ -95,7 +97,7 @@ namespace LiqWorkflow
 
         private void ThrowIfNotValidConfiguration()
         {
-            if (_branches == null || !_branches.Any() || _branches.Any(x => !x.IsValid()))
+            if (_branches == null || !_branches.Any() || _branches.Any(branch => !branch.IsValid()))
             {
                 throw new InvalidWorkflowConfigurationException();
             }

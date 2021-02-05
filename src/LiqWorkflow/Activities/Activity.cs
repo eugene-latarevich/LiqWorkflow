@@ -16,8 +16,9 @@ namespace LiqWorkflow.Activities
     public abstract class Activity : IWorkflowExecutableActivity
     {
         private readonly IWorkflowExecutableActivity _action;
-        private readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+
+        protected readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
 
         protected Activity(
             IWorkflowExecutableActivity action,
@@ -42,11 +43,11 @@ namespace LiqWorkflow.Activities
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var initialData = await LoadInitialDataAsync(cancellationToken);
+                var initialData = await LoadInitialDataAsync(cancellationToken).ConfigureAwait(false);
 
                 var processingData = MergeInitialData(initialData, data);
 
-                var result = await GetAndProcessResultAsync(processingData, cancellationToken);
+                var result = await GetAndProcessResultAsync(processingData, cancellationToken).ConfigureAwait(false);
 
                 return result.Succeeded ? result : ProcessErrorResult(result.Exception);
             }
@@ -70,14 +71,21 @@ namespace LiqWorkflow.Activities
 
         protected virtual ActivityData MergeInitialData(ActivityData initialData, ActivityData data) => initialData.Map(data);
 
+        protected virtual WorkflowResult<ActivityData> ProcessErrorResult(Exception exception)
+        {
+            var message = $"Error on executing Activity with Id={Configuration.ActivityId}";
+            _workflowMessageEventBroker.PublishMessage(OnLogData.Error(message, exception));
+            return WorkflowResult<ActivityData>.Error(exception);
+        }
+
         private async Task<WorkflowResult<ActivityData>> GetAndProcessResultAsync(ActivityData data, CancellationToken cancellationToken)
         {
             MessageOnStartActivity(data);
-            var result = await _action.ExecuteAsync(data, cancellationToken);
+            var result = await _action.ExecuteAsync(data, cancellationToken).ConfigureAwait(false);
 
-            await SendToConnectedBranchesAsync(result, cancellationToken);
+            await SendToConnectedBranchesAsync(result, cancellationToken).ConfigureAwait(false);
 
-            await ProcessResultAsync(result, cancellationToken);
+            await ProcessResultAsync(result, cancellationToken).ConfigureAwait(false);
             MessageOnFinishActivity(result);
 
             return result;
@@ -93,7 +101,7 @@ namespace LiqWorkflow.Activities
                     {
                         if (branch is IWorkflowBranchContinuation continuationBranch)
                         {
-                            await continuationBranch.ContinueWithAsync(result.Value, cancellationToken);
+                            await continuationBranch.ContinueWithAsync(result.Value, cancellationToken).ConfigureAwait(false);
                         }
                     })
                     .ConfigureAwait(false);
@@ -113,13 +121,6 @@ namespace LiqWorkflow.Activities
                 var message = $"Activity with Id={Configuration.ActivityId} has been finished.";
                 _workflowMessageEventBroker.PublishMessage(OnLogData.Info(message, result.Value));
             }
-        }
-
-        private WorkflowResult<ActivityData> ProcessErrorResult(Exception exception)
-        {
-            var message = $"Error on executing Activity with Id={Configuration.ActivityId}";
-            _workflowMessageEventBroker.PublishMessage(OnLogData.Error(message, exception));
-            return WorkflowResult<ActivityData>.Error(exception);
         }
     }
 }

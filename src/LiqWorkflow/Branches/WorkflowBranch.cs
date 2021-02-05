@@ -55,11 +55,12 @@ namespace LiqWorkflow.Branches
                     cancellationToken.ThrowIfCancellationRequested();
 
                     var activityResult = await TaskHelper.RetryOnConditionOrException(
-                        condition: result => result.Succeeded,
-                        retryFunc: () => activity.ExecuteAsync(lastResult, cancellationToken),
-                        retryCount: _workflowConfiguration.RetrySetting.RetryCount,
-                        delay: _workflowConfiguration.RetrySetting.Delay,
-                        cancellationToken);
+                            condition: result => result.Succeeded,
+                            retryFunc: () => activity.ExecuteAsync(lastResult, cancellationToken),
+                            retryCount: _workflowConfiguration.RetrySetting.RetryCount,
+                            delay: _workflowConfiguration.RetrySetting.Delay,
+                            cancellationToken)
+                        .ConfigureAwait(false);
 
                     lastResult = activityResult.Value;
                 }
