@@ -33,11 +33,11 @@ namespace LiqWorkflow
 
         public bool TryRemoveWorkflow(string workflowId) => _workflows.TryRemove(workflowId, out _);
 
-        public virtual void TryAddWorkflow(IWorkflowInitData workflowInitData)
+        public virtual bool TryAddWorkflow(IWorkflowInitData workflowInitData)
         {
             var workflow = BuildWorkflow(workflowInitData);
 
-            TryAddWorkflow(workflowInitData.WorkflowConfiguration.Id, workflow);
+            return TryAddWorkflow(workflowInitData.WorkflowConfiguration.Id, workflow);
         }
 
         public Task<WorkflowResult> StartWorkflowAsync(string workflowId) 
