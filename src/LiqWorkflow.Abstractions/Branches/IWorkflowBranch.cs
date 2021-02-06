@@ -12,6 +12,8 @@ namespace LiqWorkflow.Abstractions.Branches
 
         Task PulseAsync(CancellationToken cancellationToken);
 
+        Task RestoreAsync(CancellationToken cancellationToken);
+
         bool IsValid();
     }
 }

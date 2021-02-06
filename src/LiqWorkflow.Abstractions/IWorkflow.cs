@@ -12,6 +12,8 @@ namespace LiqWorkflow.Abstractions
 
         Task<WorkflowResult> StartAsync();
 
+        Task<WorkflowResult> RestoreAsync();
+
         Task<WorkflowResult> StopAsync();
     }
 }

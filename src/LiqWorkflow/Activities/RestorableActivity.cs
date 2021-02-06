@@ -19,11 +19,10 @@ namespace LiqWorkflow.Activities
 
         }
 
-        public async Task<WorkflowResult<ActivityData>> RestoreAsync(ActivityData data, CancellationToken cancellationToken = default)
+        public async Task<WorkflowResult<ActivityData>> RestoreAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                //TODO define if this point is restorable
                 var restoredData = await FindRestoredDataAsync(Configuration, cancellationToken);
                 return await ExecuteAsync(restoredData, cancellationToken);
             }

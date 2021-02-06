@@ -45,6 +45,11 @@ namespace LiqWorkflow
                 ? workflow.StartAsync()
                 : WorkflowResult.Error(new NotFoundException($"Workflow with WorkflowId={workflowId} wasn't found.")).AsTask();
 
+        public Task<WorkflowResult> RestoreWorkflowAsync(string workflowId) 
+            => _workflows.TryGetValue(workflowId, out var workflow)
+                ? workflow.RestoreAsync()
+                : WorkflowResult.Error(new NotFoundException($"Workflow with WorkflowId={workflowId} wasn't found.")).AsTask();
+
         public Task<WorkflowResult> StopWorkflowAsync(string workflowId) 
             => _workflows.TryGetValue(workflowId, out var workflow)
                 ? workflow.StopAsync()
@@ -77,10 +82,8 @@ namespace LiqWorkflow
 
             workflowBuilder.WithConfiguration(workflowInitData.WorkflowConfiguration);
 
-            workflowInitData.BranchesData
-                .ForEach(branchData => workflowBuilder.WithBranch(branchData.Type, branchData.Configuration));
-            workflowInitData.ActivitiesData
-                .ForEach(activityData => workflowBuilder.WithActivity(activityData.Type, activityData.Configuration));
+            workflowInitData.BranchesData.ForEach(branchData => workflowBuilder.WithBranch(branchData));
+            workflowInitData.ActivitiesData.ForEach(activityData => workflowBuilder.WithActivity(activityData));
 
             return workflowBuilder.Build();
         }

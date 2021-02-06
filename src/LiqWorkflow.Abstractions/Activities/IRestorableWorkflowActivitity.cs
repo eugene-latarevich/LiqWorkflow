@@ -6,6 +6,6 @@ namespace LiqWorkflow.Abstractions.Activities
 {
     public interface IRestorableWorkflowActivitity : IWorkflowExecutableActivity
     {
-        Task<WorkflowResult<ActivityData>> RestoreAsync(ActivityData data, CancellationToken cancellationToken = default);
+        Task<WorkflowResult<ActivityData>> RestoreAsync(CancellationToken cancellationToken = default);
     }
 }

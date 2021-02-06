@@ -34,35 +34,9 @@ namespace LiqWorkflow
 
         public IWorkflowConfiguration Configuration { get; }
 
-        public async Task<WorkflowResult> StartAsync()
-        {
-            await _semaphoreSlim.WaitAsync(Configuration.CancellationTokenSource.Token);
-            try
-            {
-                ThrowIfNotValidConfiguration();
+        public Task<WorkflowResult> StartAsync() => LaunchAsync(branch => branch.PulseAsync(Configuration.CancellationTokenSource.Token));
 
-                Status = WorkflowStatus.Starting;
-
-                await _branches
-                    .ForEachAsync(branch => branch.PulseAsync(Configuration.CancellationTokenSource.Token))
-                    .ConfigureAwait(false);
-
-                Status = WorkflowStatus.Executing;
-
-                return WorkflowResult.Ok();
-            }
-            catch (Exception exception)
-            {
-                var message = $"Error on start Workflow with Id={Configuration.Id}";
-                _workflowMessageEventBroker.PublishMessage(OnLogData.Error(message, exception));
-            }
-            finally
-            {
-                _semaphoreSlim.Release();
-            }
-
-            return WorkflowResult.Error();
-        }
+        public Task<WorkflowResult> RestoreAsync() => LaunchAsync(branch => branch.RestoreAsync(Configuration.CancellationTokenSource.Token));
 
         public async Task<WorkflowResult> StopAsync()
         {
@@ -101,6 +75,34 @@ namespace LiqWorkflow
             {
                 throw new InvalidWorkflowConfigurationException();
             }
+        }
+
+        private async Task<WorkflowResult> LaunchAsync(Func<IWorkflowBranch, Task> onStart)
+        {
+            await _semaphoreSlim.WaitAsync(Configuration.CancellationTokenSource.Token);
+            try
+            {
+                ThrowIfNotValidConfiguration();
+
+                Status = WorkflowStatus.Starting;
+
+                await _branches.ForEachAsync(onStart).ConfigureAwait(false);
+
+                Status = WorkflowStatus.Executing;
+
+                return WorkflowResult.Ok();
+            }
+            catch (Exception exception)
+            {
+                var message = $"Error on start Workflow with Id={Configuration.Id}";
+                _workflowMessageEventBroker.PublishMessage(OnLogData.Error(message, exception));
+            }
+            finally
+            {
+                _semaphoreSlim.Release();
+            }
+
+            return WorkflowResult.Error();
         }
     }
 }

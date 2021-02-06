@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LiqWorkflow.Abstractions;
@@ -35,7 +36,27 @@ namespace LiqWorkflow.Branches
 
         public IOrderedActivityCollection Activities { get; }
 
-        public Task PulseAsync(CancellationToken cancellationToken) => ProcessActivitiesAsync(null, Activities, cancellationToken);
+        public Task PulseAsync(CancellationToken cancellationToken) => ProcessActivitiesAsync(default, Activities, cancellationToken);
+        
+        public async Task RestoreAsync(CancellationToken cancellationToken)
+        {
+            foreach (var activity in Activities)
+            {
+                if (activity.Configuration.RestorePoint)
+                {
+                    var restorableActivity = activity.AsRestorable(_workflowConfiguration.ServiceProvider);
+                    
+                    //TODO execute restorble activity
+                }
+                else
+                {
+                    await activity.Branches
+                        .Select(x => x.Value)
+                        .ForEachAsync(branch => branch.RestoreAsync(cancellationToken))
+                        .ConfigureAwait(false);
+                }
+            }
+        }
 
         public Task ContinueWithAsync(ActivityData initialData, CancellationToken cancellationToken)
         {

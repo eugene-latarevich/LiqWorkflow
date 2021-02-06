@@ -7,6 +7,7 @@ using LiqWorkflow.Abstractions.Events;
 using LiqWorkflow.Abstractions.Models.Builder;
 using LiqWorkflow.Abstractions.Models.Factories;
 using LiqWorkflow.Branches;
+using LiqWorkflow.Common.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LiqWorkflow
@@ -33,24 +34,16 @@ namespace LiqWorkflow
             return this;
         }
 
-        public IWorkflowBuilder WithBranch<TBranch>(IBranchConfiguration configuration)
-            where TBranch : class, IWorkflowBranch 
-                => WithBranch(typeof(TBranch), configuration);
-
-        public IWorkflowBuilder WithBranch(Type type, IBranchConfiguration configuration)
+        public IWorkflowBuilder WithBranch(IBranchInitData initData)
         {
-            _branchesData.Add(new CreatingBranchConfiguration{Type = type, Configuration = configuration});
+            _branchesData.Add(initData.CreateBranchConfigurationForBuilder());
 
             return this;
         }
 
-        public IWorkflowBuilder WithActivity<TActivity>(IActivityConfiguration configuration)
-            where TActivity : class, IWorkflowActivity
-                => WithActivity(typeof(TActivity), configuration);
-
-        public IWorkflowBuilder WithActivity(Type type, IActivityConfiguration configuration)
+        public IWorkflowBuilder WithActivity(IActivityInitData initData)
         {
-            _activitiesData.Add(new CreatingActivityConfiguration{Type = type, Configuration = configuration});
+            _activitiesData.Add(initData.CreateActivityConfigurationForBuilder());
 
             return this;
         }

@@ -27,7 +27,7 @@ namespace LiqWorkflow.Branches
 
                 var branchActivities = CreateBranchActivities(configuration.WithProcesingBranchData(branchData));
 
-                var branch = (IWorkflowBranch)Activator.CreateInstance(branchData.Type, configuration.WorkflowConfiguration, branchData.Configuration, branchActivities.ToDictionary(x => x.Configuration.ActivityId));
+                var branch = (IWorkflowBranch)Activator.CreateInstance(branchData.Type, branchData.GetConstructorParameters(configuration.WorkflowConfiguration, branchActivities));
                 
                 configuration.Branches.Add(branch);
             }
@@ -50,7 +50,7 @@ namespace LiqWorkflow.Branches
                 
                 var activityChildBranches = GetOrCreateActivityBranches(activityData, configuration);
 
-                var activity = (IWorkflowActivity)Activator.CreateInstance(activityData.Type, activityData.Configuration, activityChildBranches.ToDictionary(x => x.Configuration.BranchId));
+                var activity = (IWorkflowActivity)Activator.CreateInstance(activityData.ActiviyType, activityData.GetConstructorParameters(activityChildBranches));
 
                 configuration.Activities.Add(activity);
             }
@@ -67,8 +67,7 @@ namespace LiqWorkflow.Branches
             return branchActivities;
         }
 
-        private bool ExistsActivity(string activityId, ConnectedBranchesConfiguration configuration) 
-            => configuration.Activities.Any(x => x.Configuration.ActivityId == activityId);
+        private bool ExistsActivity(string activityId, ConnectedBranchesConfiguration configuration) => configuration.Activities.Any(x => x.Configuration.ActivityId == activityId);
 
         private CreatingActivityConfiguration FindActivityData(string activityId, ConnectedBranchesConfiguration configuration)
         {

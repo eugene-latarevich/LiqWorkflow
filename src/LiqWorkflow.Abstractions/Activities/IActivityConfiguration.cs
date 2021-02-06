@@ -11,6 +11,8 @@ namespace LiqWorkflow.Abstractions.Activities
 
         bool IsBranchFinishPoint { get; }
 
+        bool RestorePoint { get; }
+
         ActivityTransition Transition { get; }
 
         IServiceProvider ServiceProvider { get; }

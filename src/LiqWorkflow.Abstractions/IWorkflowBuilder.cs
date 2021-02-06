@@ -1,5 +1,4 @@
-﻿using System;
-using LiqWorkflow.Abstractions.Activities;
+﻿using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Branches;
 
 namespace LiqWorkflow.Abstractions
@@ -8,15 +7,9 @@ namespace LiqWorkflow.Abstractions
     {
         IWorkflowBuilder WithConfiguration(IWorkflowConfiguration configuration);
 
-        IWorkflowBuilder WithBranch<TBranch>(IBranchConfiguration configuration)
-            where TBranch : class, IWorkflowBranch;
+        IWorkflowBuilder WithBranch(IBranchInitData initData);
 
-        IWorkflowBuilder WithBranch(Type type, IBranchConfiguration configuration);
-
-        IWorkflowBuilder WithActivity<TActivity>(IActivityConfiguration configuration)
-            where TActivity : class, IWorkflowActivity;
-
-        IWorkflowBuilder WithActivity(Type type, IActivityConfiguration configuration);
+        IWorkflowBuilder WithActivity(IActivityInitData initData);
 
         IWorkflow Build();
     }
