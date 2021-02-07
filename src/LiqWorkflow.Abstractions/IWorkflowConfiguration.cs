@@ -1,5 +1,5 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
+using LiqWorkflow.Abstractions.Containers;
 using LiqWorkflow.Abstractions.Models.Settings;
 
 namespace LiqWorkflow.Abstractions
@@ -14,6 +14,6 @@ namespace LiqWorkflow.Abstractions
 
         CancellationTokenSource CancellationTokenSource { get; }
 
-        IServiceProvider ServiceProvider { get; }
+        IContainer Services { get; }
     }
 }

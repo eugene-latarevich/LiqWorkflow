@@ -1,4 +1,4 @@
-﻿using System;
+﻿using LiqWorkflow.Abstractions.Containers;
 using LiqWorkflow.Abstractions.Models.Configurations;
 
 namespace LiqWorkflow.Abstractions.Activities
@@ -15,6 +15,6 @@ namespace LiqWorkflow.Abstractions.Activities
 
         ActivityTransition Transition { get; }
 
-        IServiceProvider ServiceProvider { get; }
+        IContainer Services { get; }
     }
 }

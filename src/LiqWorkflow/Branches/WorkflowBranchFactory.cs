@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Branches;
+using LiqWorkflow.Abstractions.Containers;
 using LiqWorkflow.Abstractions.Models.Builder;
 using LiqWorkflow.Abstractions.Models.Factories;
 using LiqWorkflow.Exceptions;
@@ -11,9 +12,11 @@ namespace LiqWorkflow.Branches
 {
     class WorkflowBranchFactory : IWorkflowBranchFactory
     {
-        public WorkflowBranchFactory()
+        private readonly IContainer _container;
+
+        public WorkflowBranchFactory(IContainer container)
         {
-            
+            _container = container;
         }
 
         public IEnumerable<IWorkflowBranch> BuildConnected(ConnectedBranchesConfiguration configuration)
@@ -27,7 +30,7 @@ namespace LiqWorkflow.Branches
 
                 var branchActivities = CreateBranchActivities(configuration.WithProcesingBranchData(branchData));
 
-                var branch = (IWorkflowBranch)Activator.CreateInstance(branchData.Type, branchData.GetConstructorParameters(configuration.WorkflowConfiguration, branchActivities));
+                var branch = (IWorkflowBranch)Activator.CreateInstance(typeof(WorkflowBranch), branchData.GetConstructorParameters(configuration.WorkflowConfiguration, branchActivities));
                 
                 configuration.Branches.Add(branch);
             }
@@ -50,7 +53,7 @@ namespace LiqWorkflow.Branches
                 
                 var activityChildBranches = GetOrCreateActivityBranches(activityData, configuration);
 
-                var activity = (IWorkflowActivity)Activator.CreateInstance(activityData.ActiviyType, activityData.GetConstructorParameters(activityChildBranches));
+                var activity = _container.GetKeyedService<IWorkflowActivity>(activityData.ActiviyKey, activityData.GetConstructorParameters(activityChildBranches));
 
                 configuration.Activities.Add(activity);
             }

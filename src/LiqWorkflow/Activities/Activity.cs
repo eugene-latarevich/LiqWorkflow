@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+using LiqWorkflow.Abstractions;
 using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Branches;
 using LiqWorkflow.Abstractions.Events;
@@ -16,18 +16,18 @@ namespace LiqWorkflow.Activities
 {
     public abstract class Activity : IWorkflowExecutableActivity
     {
-        private readonly IWorkflowExecutableActivity _action;
+        private readonly IWorkflowExecutableAction _action;
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
 
         protected readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
 
         protected Activity(
-            IWorkflowExecutableActivity action,
+            IWorkflowExecutableAction action,
             IActivityConfiguration configuration,
             IDictionary<string, IWorkflowBranch> branches)
         {
             _action = action;
-            _workflowMessageEventBroker = configuration.ServiceProvider.GetService<IWorkflowMessageEventBroker>();
+            _workflowMessageEventBroker = configuration.Services.GetService<IWorkflowMessageEventBroker>();
 
             Configuration = configuration;
             Branches = branches.ToImmutableDictionary();

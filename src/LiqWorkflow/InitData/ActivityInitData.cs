@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Generic;
 using LiqWorkflow.Abstractions.Activities;
 
 namespace LiqWorkflow.InitData
@@ -10,32 +8,23 @@ namespace LiqWorkflow.InitData
         private readonly List<object> _parameters = new List<object>();
 
         public ActivityInitData(
-            Type activityType,
-            Type executableActivityType, 
+            object activityKey,
+            object activityActionKey, 
             IEnumerable<string> branchIds, 
             IActivityConfiguration configuration)
         {
-            ActivityType = activityType;
-            ExecutableActivityType = executableActivityType;
+            ActivityKey = activityKey;
+            ActivityActionKey = activityActionKey;
             Configuration = configuration;
             BranchIds = branchIds;
         }
 
-        public Type ActivityType { get; }
+        public object ActivityKey { get; }
 
-        public Type ExecutableActivityType { get; }
+        public object ActivityActionKey { get; }
 
         public IActivityConfiguration Configuration { get; }
 
         public IEnumerable<string> BranchIds { get; }
-
-        public IEnumerable<object> Parameters => _parameters.ToImmutableList();
-
-        public IActivityInitData WithParameter(object parameter)
-        {
-            _parameters.Add(parameter);
-
-            return this;
-        }
     }
 }

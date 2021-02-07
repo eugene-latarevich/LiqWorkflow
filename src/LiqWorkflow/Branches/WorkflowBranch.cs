@@ -11,7 +11,6 @@ using LiqWorkflow.Abstractions.Models;
 using LiqWorkflow.Activities;
 using LiqWorkflow.Common.Extensions;
 using LiqWorkflow.Common.Helpers;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LiqWorkflow.Branches
 {
@@ -26,7 +25,7 @@ namespace LiqWorkflow.Branches
             IDictionary<string, IWorkflowActivity> activities)
         {
             _workflowConfiguration = workflowConfiguration;
-            _workflowMessageEventBroker = workflowConfiguration.ServiceProvider.GetService<IWorkflowMessageEventBroker>();
+            _workflowMessageEventBroker = workflowConfiguration.Services.GetService<IWorkflowMessageEventBroker>();
 
             Configuration = branchConfiguration;
             Activities = new OrderedActivityCollection(activities);
@@ -44,9 +43,7 @@ namespace LiqWorkflow.Branches
             {
                 if (activity.Configuration.RestorePoint)
                 {
-                    var restorableActivity = activity.AsRestorable(_workflowConfiguration.ServiceProvider);
-                    
-                    //TODO execute restorble activity
+                    //TODO convert to executable and execute activity
                 }
                 else
                 {

@@ -1,5 +1,5 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
+using LiqWorkflow.Abstractions.Containers;
 using LiqWorkflow.Abstractions.Models.Settings;
 
 namespace LiqWorkflow.Abstractions.Models.Configurations
@@ -10,12 +10,12 @@ namespace LiqWorkflow.Abstractions.Models.Configurations
             string id, 
             string name, 
             RetrySetting retrySetting, 
-            IServiceProvider serviceProvider)
+            IContainer services)
         {
             Id = id;
             Name = name;
             RetrySetting = retrySetting;
-            ServiceProvider = serviceProvider;
+            Services = services;
             CancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -25,7 +25,7 @@ namespace LiqWorkflow.Abstractions.Models.Configurations
 
         public RetrySetting RetrySetting { get; }
 
-        public IServiceProvider ServiceProvider { get; }
+        public IContainer Services { get; }
 
         public CancellationTokenSource CancellationTokenSource { get; }
     }

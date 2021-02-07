@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Branches;
+using LiqWorkflow.Abstractions.Containers;
 
 namespace LiqWorkflow.Abstractions.Models.Builder
 {
     public class CreatingBranchConfiguration
     {
+        private readonly IContainer _container;
         private readonly List<object> _parameters = new List<object>();
 
-        public CreatingBranchConfiguration()
+        public CreatingBranchConfiguration(IContainer container)
         {
-
+            _container = container;
         }
-
-        public Type Type { get; set; }
 
         public IBranchConfiguration Configuration { get; set; }
 

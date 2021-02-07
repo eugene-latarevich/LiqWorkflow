@@ -1,5 +1,5 @@
-﻿using System;
-using LiqWorkflow.Abstractions.Activities;
+﻿using LiqWorkflow.Abstractions.Activities;
+using LiqWorkflow.Abstractions.Containers;
 
 namespace LiqWorkflow.Abstractions.Models.Configurations
 {
@@ -8,7 +8,7 @@ namespace LiqWorkflow.Abstractions.Models.Configurations
         public ActivityConfiguration(
             string activityId, 
             ActivityTransition transition,
-            IServiceProvider serviceProvider,
+            IContainer services,
             bool isBranchStartPoint = false,
             bool isBranchFinishPoint = false,
             bool restorePoint = false)
@@ -18,7 +18,7 @@ namespace LiqWorkflow.Abstractions.Models.Configurations
             IsBranchFinishPoint = isBranchFinishPoint;
             RestorePoint = restorePoint;
             Transition = transition;
-            ServiceProvider = serviceProvider;
+            Services = services;
         }
 
         public string ActivityId { get; }
@@ -31,6 +31,6 @@ namespace LiqWorkflow.Abstractions.Models.Configurations
 
         public ActivityTransition Transition { get; }
 
-        public IServiceProvider ServiceProvider { get; }
+        public IContainer Services { get; }
     }
 }
