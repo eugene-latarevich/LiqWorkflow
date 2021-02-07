@@ -109,16 +109,11 @@ namespace LiqWorkflow.Common.Extensions
             {
                 var assembly = Assembly.GetAssembly(markerType);
 
-                var actionTypes = assembly
-                    .GetTypes()
-                    .Where(type => type.GetInterfaces().Contains(typeof(IWorkflowExecutableAction)))
-                    .ToArray();
+                var actionTypes = assembly.GetTypes().Where(type => type.GetInterfaces().Contains(typeof(IWorkflowExecutableAction))).ToArray();
 
                 foreach (var actionType in actionTypes)
                 {
-                    var keyAttribute = (KeyedWorkflowActionAttribute)actionType
-                        .GetCustomAttributes(typeof(KeyedWorkflowActionAttribute), false)
-                        .FirstOrDefault();
+                    var keyAttribute = (KeyedWorkflowActionAttribute)actionType.GetCustomAttributes(typeof(KeyedWorkflowActionAttribute), false).FirstOrDefault();
                     if (keyAttribute == null)
                     {
                         throw new NotFoundException($"Key attribute for action with Type={actionType} wasn't found. Every action class must have key Attribute {typeof(KeyedWorkflowActionAttribute)}.");
