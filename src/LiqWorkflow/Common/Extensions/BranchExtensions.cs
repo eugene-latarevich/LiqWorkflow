@@ -7,6 +7,6 @@ namespace LiqWorkflow.Common.Extensions
     static class BranchExtensions
     {
         public static CreatingBranchConfiguration CreateBranchConfigurationForBuilder(this IBranchInitData initData, IContainer container)
-            => new CreatingBranchConfiguration(container) {Configuration = initData.Configuration};
+            => new(container) {Configuration = initData.Configuration};
     }
 }

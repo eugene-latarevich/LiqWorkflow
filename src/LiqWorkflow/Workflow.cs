@@ -17,7 +17,7 @@ namespace LiqWorkflow
     {
         private readonly IEnumerable<IWorkflowBranch> _branches;
         private readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
-        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
 
         public Workflow(
             IWorkflowConfiguration configuration,

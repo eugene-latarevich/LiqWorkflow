@@ -17,7 +17,7 @@ namespace LiqWorkflow.Activities
     public abstract class Activity : IWorkflowExecutableActivity
     {
         private readonly IWorkflowExecutableAction _action;
-        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _semaphoreSlim = new(1, 1);
 
         protected readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
 

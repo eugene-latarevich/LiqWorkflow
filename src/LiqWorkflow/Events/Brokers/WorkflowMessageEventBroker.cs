@@ -8,7 +8,7 @@ namespace LiqWorkflow.Events.Brokers
 {
     class WorkflowMessageEventBroker : IWorkflowMessageEventBroker
     {
-        private readonly object _lockObject = new object();
+        private readonly object _lockObject = new();
 
         private List<IObserver<OnLogData>> _observers;
 
