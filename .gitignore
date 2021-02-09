@@ -9,3 +9,5 @@
 /src/LiqWorkflow.Abstractions/obj
 /src/LiqWorkflow/bin/Debug/netcoreapp3.1
 /src/LiqWorkflow.Abstractions/bin/Debug/netcoreapp3.1
+/src/LiqWorkflow/bin/Debug/net5.0
+/src/LiqWorkflow.Abstractions/bin/Debug/net5.0
