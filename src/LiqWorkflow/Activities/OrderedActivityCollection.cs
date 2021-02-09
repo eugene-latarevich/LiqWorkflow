@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Common.Extensions;
@@ -13,9 +12,6 @@ namespace LiqWorkflow.Activities
     {
         private readonly IDictionary<string, IWorkflowActivity> _activities = new Dictionary<string, IWorkflowActivity>();
 
-        private int _startFrom;
-        private bool _canStartFrom = true;
-
         public OrderedActivityCollection(IDictionary<string, IWorkflowActivity> activities)
         {
             ThrowIfAnyActivityNotExecutable(activities);
@@ -24,32 +20,10 @@ namespace LiqWorkflow.Activities
 
         public IWorkflowActivity this[string activityId] => _activities[activityId];
 
-        public IOrderedActivityCollection Clone()
-        {
-            var activities = _activities.Select(x => x).ToImmutableDictionary();
-            return new OrderedActivityCollection(activities);
-        }
-
-        public IOrderedActivityCollection StartFrom(string activityId)
-        {
-            var activity = _activities.Where(x => x.Key == activityId).Select(x => x.Value).FirstOrDefault();
-
-            if (activity == null)
-            {
-                throw new NotFoundException("Start From activity wasn't found");
-            }
-            
-            _startFrom = _activities.Select(x => x.Key).ToList().IndexOf(activityId);
-
-            return this;
-        }
-
         public IEnumerator<IWorkflowExecutableActivity> GetEnumerator()
         {
-            foreach (var keyActivityPair in _activities.Skip(_canStartFrom ? _startFrom - 1 : 0))
+            foreach (var keyActivityPair in _activities)
             {
-                _canStartFrom = false;
-
                 if (keyActivityPair.Value is IWorkflowExecutableActivity executableActivity)
                 {
                     yield return executableActivity;

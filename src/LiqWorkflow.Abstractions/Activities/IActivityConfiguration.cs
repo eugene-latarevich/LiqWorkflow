@@ -7,6 +7,8 @@ namespace LiqWorkflow.Abstractions.Activities
     {
         string ActivityId { get; }
 
+        string ActivityToId { get; }
+
         bool IsBranchStartPoint { get; }
 
         bool IsBranchFinishPoint { get; }

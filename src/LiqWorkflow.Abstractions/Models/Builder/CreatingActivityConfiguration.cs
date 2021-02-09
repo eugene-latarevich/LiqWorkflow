@@ -19,6 +19,8 @@ namespace LiqWorkflow.Abstractions.Models.Builder
 
         public object ActivityActionKey { get; set; }
 
+        public object RestoredActivityKey { get; set; }
+
         public IActivityConfiguration Configuration { get; set; }
 
         public IEnumerable<string> BranchIds { get; set; }

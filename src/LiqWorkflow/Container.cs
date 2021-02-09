@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace LiqWorkflow
 {
-    public class Container : IContainer
+    class Container : IContainer
     {
         private readonly IServiceProvider _serviceProvider;
         private static readonly ConcurrentBag<TypeConfiguration> _types = new ConcurrentBag<TypeConfiguration>();

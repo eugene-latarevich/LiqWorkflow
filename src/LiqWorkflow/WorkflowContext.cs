@@ -4,27 +4,27 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LiqWorkflow.Abstractions;
+using LiqWorkflow.Abstractions.Containers;
 using LiqWorkflow.Abstractions.Events;
 using LiqWorkflow.Abstractions.Models;
 using LiqWorkflow.Common.Extensions;
 using LiqWorkflow.Exceptions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LiqWorkflow
 {
     public abstract class WorkflowContext : IWorkflowExecutableContext, IDisposable
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IContainer _container;
         private readonly IWorkflowMessageEventBroker _workflowMessageEventBroker;
         private readonly ConcurrentDictionary<string, IWorkflow> _workflows = new ConcurrentDictionary<string, IWorkflow>();
         private readonly IDisposable _eventBrokerUnsubscriber;
 
         protected WorkflowContext(
-            IServiceProvider serviceProvider,
+            IContainer container,
             IWorkflowConfiguration workflowConfiguration,
             IWorkflowMessageEventBroker workflowMessageEventBroker)
         {
-            _serviceProvider = serviceProvider;
+            _container = container;
             _workflowMessageEventBroker = workflowMessageEventBroker;
 
             _eventBrokerUnsubscriber = _workflowMessageEventBroker.Subscribe(
@@ -78,7 +78,7 @@ namespace LiqWorkflow
 
         private IWorkflow BuildWorkflow(IWorkflowInitData workflowInitData)
         {
-            var workflowBuilder = _serviceProvider.GetService<IWorkflowBuilder>();
+            var workflowBuilder = _container.GetService<IWorkflowBuilder>();
 
             workflowBuilder.WithConfiguration(workflowInitData.WorkflowConfiguration);
 

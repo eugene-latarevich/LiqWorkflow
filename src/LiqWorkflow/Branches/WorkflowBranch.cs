@@ -11,6 +11,7 @@ using LiqWorkflow.Abstractions.Models;
 using LiqWorkflow.Activities;
 using LiqWorkflow.Common.Extensions;
 using LiqWorkflow.Common.Helpers;
+using LiqWorkflow.Exceptions;
 
 namespace LiqWorkflow.Branches
 {
@@ -43,7 +44,8 @@ namespace LiqWorkflow.Branches
             {
                 if (activity.Configuration.RestorePoint)
                 {
-                    //TODO convert to executable and execute activity
+                    await ProcessActivitiesAsync(activity.Configuration.Create(), Activities.Clone(), cancellationToken)
+                        .ConfigureAwait(false);
                 }
                 else
                 {
@@ -55,18 +57,14 @@ namespace LiqWorkflow.Branches
             }
         }
 
-        public Task ContinueWithAsync(ActivityData initialData, CancellationToken cancellationToken)
-        {
-            var clonedActivities = Activities.Clone().StartFrom(initialData.ActivityToId);
-            return ProcessActivitiesAsync(initialData, clonedActivities, cancellationToken);
-        }
+        public Task ContinueWithAsync(ActivityData initialData, CancellationToken cancellationToken) => ProcessActivitiesAsync(initialData, Activities.Clone(), cancellationToken);
 
         public bool IsValid() => Activities.ValidateBranchStartEnd() && Activities.ValidateInnerBranches();
 
         private async Task ProcessActivitiesAsync(ActivityData initialData, IOrderedActivityCollection activities, CancellationToken cancellationToken)
         {
             ActivityData lastResult = initialData;
-            foreach (var activity in activities)
+            foreach (var activity in activities.StartFrom(initialData.GetStartFromActivityId()))
             {
                 try
                 {
@@ -74,7 +72,7 @@ namespace LiqWorkflow.Branches
 
                     var activityResult = await TaskHelper.RetryOnConditionOrException(
                             condition: result => result.Succeeded,
-                            retryFunc: () => activity.ExecuteAsync(lastResult, cancellationToken),
+                            retryFunc: () => ExecuteAsync(lastResult, activity, cancellationToken),
                             retryCount: _workflowConfiguration.RetrySetting.RetryCount,
                             delay: _workflowConfiguration.RetrySetting.Delay,
                             cancellationToken)
@@ -93,6 +91,21 @@ namespace LiqWorkflow.Branches
                     throw new Exception(message, exception);
                 }
             }
+        }
+
+        private Task<WorkflowResult<ActivityData>> ExecuteAsync(ActivityData initialData, IWorkflowExecutableActivity activity, CancellationToken cancellationToken)
+        {
+            if (activity.Configuration.RestorePoint)
+            {
+                if (activity is IRestorableWorkflowActivitity restorableActivity)
+                {
+                    return restorableActivity.ExecuteAsync(initialData, cancellationToken);
+                }
+
+                throw new UnknownTypeException($"Restorable activity must implement {typeof(IRestorableWorkflowActivitity)} type.");
+            }
+
+            return activity.ExecuteAsync(initialData, cancellationToken);
         }
 
         private string ProcessError(IWorkflowActivity activity, Exception exception)

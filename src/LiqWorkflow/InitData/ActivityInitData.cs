@@ -10,11 +10,13 @@ namespace LiqWorkflow.InitData
         public ActivityInitData(
             object activityKey,
             object activityActionKey, 
+            object restoredActivityKey,
             IEnumerable<string> branchIds, 
             IActivityConfiguration configuration)
         {
             ActivityKey = activityKey;
             ActivityActionKey = activityActionKey;
+            RestoredActivityKey = restoredActivityKey;
             Configuration = configuration;
             BranchIds = branchIds;
         }
@@ -22,6 +24,8 @@ namespace LiqWorkflow.InitData
         public object ActivityKey { get; }
 
         public object ActivityActionKey { get; }
+
+        public object RestoredActivityKey { get; }
 
         public IActivityConfiguration Configuration { get; }
 

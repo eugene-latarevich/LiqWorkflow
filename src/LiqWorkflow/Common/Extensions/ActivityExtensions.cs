@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Containers;
+using LiqWorkflow.Abstractions.Models;
 using LiqWorkflow.Abstractions.Models.Builder;
 
 namespace LiqWorkflow.Common.Extensions
@@ -46,12 +47,17 @@ namespace LiqWorkflow.Common.Extensions
 
         public static string GetActivityToId(this KeyValuePair<string, IWorkflowActivity> keyActivityPair) => keyActivityPair.Value.Configuration.Transition.ActivityToId;
 
-        public static CreatingActivityConfiguration CreateActivityConfigurationForBuilder(this IActivityInitData initData, IContainer container) => new CreatingActivityConfiguration(container)
-        {
-            ActiviyKey = initData.ActivityKey,
-            ActivityActionKey = initData.ActivityActionKey,
-            Configuration = initData.Configuration,
-            BranchIds = initData.BranchIds,
-        };
+        public static CreatingActivityConfiguration CreateActivityConfigurationForBuilder(this IActivityInitData initData, IContainer container) 
+            => new CreatingActivityConfiguration(container)
+            {
+                ActiviyKey = initData.ActivityKey,
+                ActivityActionKey = initData.ActivityActionKey,
+                RestoredActivityKey = initData.RestoredActivityKey,
+                Configuration = initData.Configuration,
+                BranchIds = initData.BranchIds,
+            };
+
+        public static ActivityData Create(this IActivityConfiguration configuration) 
+            => new ActivityData(configuration.ActivityId, configuration.ActivityToId, configuration.RestorePoint, false);
     }
 }

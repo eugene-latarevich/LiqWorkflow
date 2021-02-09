@@ -8,6 +8,8 @@ namespace LiqWorkflow.Abstractions.Activities
 
         object ActivityActionKey { get; }
 
+        object RestoredActivityKey { get; }
+
         IActivityConfiguration Configuration { get; }
 
         IEnumerable<string> BranchIds { get; }

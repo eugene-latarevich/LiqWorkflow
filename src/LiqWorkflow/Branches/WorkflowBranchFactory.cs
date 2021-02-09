@@ -53,7 +53,7 @@ namespace LiqWorkflow.Branches
                 
                 var activityChildBranches = GetOrCreateActivityBranches(activityData, configuration);
 
-                var activity = _container.GetKeyedService<IWorkflowActivity>(activityData.ActiviyKey, activityData.GetConstructorParameters(activityChildBranches));
+                var activity = CreateActivity(activityData, activityChildBranches);
 
                 configuration.Activities.Add(activity);
             }
@@ -95,6 +95,15 @@ namespace LiqWorkflow.Branches
             }
 
             return Enumerable.Empty<IWorkflowBranch>();
+        }
+
+        private IWorkflowActivity CreateActivity(CreatingActivityConfiguration activityData, IEnumerable<IWorkflowBranch> activityChildBranches)
+        {
+            var serviceKey = activityData.Configuration.RestorePoint
+                ? activityData.RestoredActivityKey ?? ServiceKeys.RestorableActivity
+                : activityData.ActiviyKey ?? ServiceKeys.ExecutableActivity;
+
+            return _container.GetKeyedService<IWorkflowActivity>(serviceKey, activityData.GetConstructorParameters(activityChildBranches));
         }
     }
 }

@@ -7,6 +7,7 @@ namespace LiqWorkflow.Abstractions.Models.Configurations
     {
         public ActivityConfiguration(
             string activityId, 
+            string activityToId,
             ActivityTransition transition,
             IContainer services,
             bool isBranchStartPoint = false,
@@ -14,6 +15,7 @@ namespace LiqWorkflow.Abstractions.Models.Configurations
             bool restorePoint = false)
         {
             ActivityId = activityId;
+            ActivityToId = activityToId;
             IsBranchStartPoint = isBranchStartPoint;
             IsBranchFinishPoint = isBranchFinishPoint;
             RestorePoint = restorePoint;
@@ -22,6 +24,8 @@ namespace LiqWorkflow.Abstractions.Models.Configurations
         }
 
         public string ActivityId { get; }
+
+        public string ActivityToId { get; }
 
         public bool IsBranchStartPoint { get; }
 
