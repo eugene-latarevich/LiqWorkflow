@@ -7,20 +7,10 @@ namespace LiqWorkflow.InitData
 {
     public class WorkflowInitData : IWorkflowInitData
     {
-        public WorkflowInitData(
-            IWorkflowConfiguration workflowConfiguration,
-            IEnumerable<BranchInitData> branchesData,
-            IEnumerable<IActivityInitData> activitiesData)
-        {
-            WorkflowConfiguration = workflowConfiguration;
-            BranchesData = branchesData;
-            ActivitiesData = activitiesData;
-        }
+        public IWorkflowConfiguration WorkflowConfiguration { get; init; }
 
-        public IWorkflowConfiguration WorkflowConfiguration { get; }
+        public IEnumerable<IBranchInitData> BranchesData { get; init; }
 
-        public IEnumerable<IBranchInitData> BranchesData { get; }
-
-        public IEnumerable<IActivityInitData> ActivitiesData { get; }
+        public IEnumerable<IActivityInitData> ActivitiesData { get; init; }
     }
 }

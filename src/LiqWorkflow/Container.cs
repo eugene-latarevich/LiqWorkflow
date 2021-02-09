@@ -13,7 +13,7 @@ namespace LiqWorkflow
     class Container : IContainer
     {
         private readonly IServiceProvider _serviceProvider;
-        private static readonly ConcurrentBag<TypeConfiguration> _types = new ConcurrentBag<TypeConfiguration>();
+        private static readonly ConcurrentBag<TypeConfiguration> _types = new();
 
         public Container(IServiceProvider serviceProvider)
         {

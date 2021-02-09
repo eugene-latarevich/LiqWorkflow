@@ -5,14 +5,14 @@ namespace LiqWorkflow.Abstractions.Branches
 {
     public interface IBranchConfiguration
     {
-        string BranchId { get; }
+        string BranchId { get; init; }
 
-        int Order { get; }
+        int Order { get; init; }
 
-        bool StartingBranch { get; }
+        bool StartingBranch { get; init; }
 
-        BranchTransition Transition { get; }
+        BranchTransition Transition { get; init; }
 
-        ImmutableArray<string> ActivityIds { get; }
+        ImmutableArray<string> ActivityIds { get; init; }
     }
 }

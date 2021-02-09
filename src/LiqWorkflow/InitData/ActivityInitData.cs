@@ -5,30 +5,14 @@ namespace LiqWorkflow.InitData
 {
     public class ActivityInitData : IActivityInitData
     {
-        private readonly List<object> _parameters = new List<object>();
+        public object ActivityKey { get; init; }
 
-        public ActivityInitData(
-            object activityKey,
-            object activityActionKey, 
-            object restoredActivityKey,
-            IEnumerable<string> branchIds, 
-            IActivityConfiguration configuration)
-        {
-            ActivityKey = activityKey;
-            ActivityActionKey = activityActionKey;
-            RestoredActivityKey = restoredActivityKey;
-            Configuration = configuration;
-            BranchIds = branchIds;
-        }
+        public object ActivityActionKey { get; init; }
 
-        public object ActivityKey { get; }
+        public object RestoredActivityKey { get; init; }
 
-        public object ActivityActionKey { get; }
+        public IActivityConfiguration Configuration { get; init; }
 
-        public object RestoredActivityKey { get; }
-
-        public IActivityConfiguration Configuration { get; }
-
-        public IEnumerable<string> BranchIds { get; }
+        public IEnumerable<string> BranchIds { get; init; }
     }
 }

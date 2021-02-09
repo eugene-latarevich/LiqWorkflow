@@ -48,7 +48,7 @@ namespace LiqWorkflow.Common.Extensions
         public static string GetActivityToId(this KeyValuePair<string, IWorkflowActivity> keyActivityPair) => keyActivityPair.Value.Configuration.Transition.ActivityToId;
 
         public static CreatingActivityConfiguration CreateActivityConfigurationForBuilder(this IActivityInitData initData, IContainer container) 
-            => new CreatingActivityConfiguration(container)
+            => new(container)
             {
                 ActiviyKey = initData.ActivityKey,
                 ActivityActionKey = initData.ActivityActionKey,
@@ -58,6 +58,12 @@ namespace LiqWorkflow.Common.Extensions
             };
 
         public static ActivityData Create(this IActivityConfiguration configuration) 
-            => new ActivityData(configuration.ActivityId, configuration.ActivityToId, configuration.RestorePoint, false);
+            => new()
+            {
+                ActivityId = configuration.ActivityId,
+                ActivityToId = configuration.ActivityToId,
+                RestorePoint = configuration.RestorePoint,
+                FromConnectedBranch = false,
+            };
     }
 }

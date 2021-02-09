@@ -4,14 +4,14 @@ namespace LiqWorkflow.Abstractions.Activities
 {
     public interface IActivityInitData
     {
-        object ActivityKey { get; }
+        object ActivityKey { get; init; }
 
-        object ActivityActionKey { get; }
+        object ActivityActionKey { get; init; }
 
-        object RestoredActivityKey { get; }
+        object RestoredActivityKey { get; init; }
 
-        IActivityConfiguration Configuration { get; }
+        IActivityConfiguration Configuration { get; init; }
 
-        IEnumerable<string> BranchIds { get; }
+        IEnumerable<string> BranchIds { get; init; }
     }
 }

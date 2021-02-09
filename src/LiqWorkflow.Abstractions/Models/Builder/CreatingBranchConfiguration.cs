@@ -9,7 +9,7 @@ namespace LiqWorkflow.Abstractions.Models.Builder
     public class CreatingBranchConfiguration
     {
         private readonly IContainer _container;
-        private readonly List<object> _parameters = new List<object>();
+        private readonly List<object> _parameters = new();
 
         public CreatingBranchConfiguration(IContainer container)
         {

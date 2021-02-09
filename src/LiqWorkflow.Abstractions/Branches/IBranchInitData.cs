@@ -2,6 +2,6 @@
 {
     public interface IBranchInitData
     {
-        IBranchConfiguration Configuration { get; }
+        IBranchConfiguration Configuration { get; init; }
     }
 }

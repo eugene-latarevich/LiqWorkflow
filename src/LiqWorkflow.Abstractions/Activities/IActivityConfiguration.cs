@@ -5,18 +5,18 @@ namespace LiqWorkflow.Abstractions.Activities
 {
     public interface IActivityConfiguration
     {
-        string ActivityId { get; }
+        string ActivityId { get; init; }
 
-        string ActivityToId { get; }
+        string ActivityToId { get; init; }
 
-        bool IsBranchStartPoint { get; }
+        bool IsBranchStartPoint { get; init; }
 
-        bool IsBranchFinishPoint { get; }
+        bool IsBranchFinishPoint { get; init; }
 
-        bool RestorePoint { get; }
+        bool RestorePoint { get; init; }
 
-        ActivityTransition Transition { get; }
+        ActivityTransition Transition { get; init; }
 
-        IContainer Services { get; }
+        IContainer Services { get; init; }
     }
 }

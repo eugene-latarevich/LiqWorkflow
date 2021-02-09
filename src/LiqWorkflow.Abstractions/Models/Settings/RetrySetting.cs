@@ -4,8 +4,8 @@ namespace LiqWorkflow.Abstractions.Models.Settings
 {
     public class RetrySetting
     {
-        public int RetryCount { get; } = 1;
+        public int RetryCount { get; init; } = 1;
 
-        public TimeSpan Delay { get; } = TimeSpan.FromSeconds(30);
+        public TimeSpan Delay { get; init; } = TimeSpan.FromSeconds(30);
     }
 }

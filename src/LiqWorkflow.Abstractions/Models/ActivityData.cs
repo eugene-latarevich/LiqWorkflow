@@ -4,39 +4,15 @@ namespace LiqWorkflow.Abstractions.Models
 {
     public class ActivityData
     {
-        public ActivityData(
-            string activityId, 
-            string activityToId, 
-            bool restorePoint,
-            bool fromConnectedBranch)
-        {
-            ActivityId = activityId;
-            ActivityToId = activityToId;
-            RestorePoint = restorePoint;
-            FromConnectedBranch = fromConnectedBranch;
-            Values = new Dictionary<string, ActivityDataValue>();
-        }
+        public string ActivityId { get; init; }
 
-        public ActivityData(
-            string activityId, 
-            string activityToId, 
-            bool restorePoint,
-            bool fromConnectedBranch, 
-            Dictionary<string, ActivityDataValue> values)
-            : this(activityId, activityToId, restorePoint, fromConnectedBranch)
-        {
-            Values = values;
-        }
+        public string ActivityToId { get; init; }
 
-        public string ActivityId { get; }
+        public bool FromConnectedBranch { get; init; }
 
-        public string ActivityToId { get; }
+        public bool RestorePoint { get; init; }
 
-        public bool FromConnectedBranch { get; }
-
-        public bool RestorePoint { get; }
-
-        public IDictionary<string, ActivityDataValue> Values { get; }
+        public IDictionary<string, ActivityDataValue> Values { get; init; } = new Dictionary<string, ActivityDataValue>();
 
         public ActivityData Map(ActivityData data)
         {

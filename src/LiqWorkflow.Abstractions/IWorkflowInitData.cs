@@ -6,10 +6,10 @@ namespace LiqWorkflow.Abstractions
 {
     public interface IWorkflowInitData
     {
-        IWorkflowConfiguration WorkflowConfiguration { get; }
+        IWorkflowConfiguration WorkflowConfiguration { get; init; }
 
-        IEnumerable<IBranchInitData> BranchesData { get; }
+        IEnumerable<IBranchInitData> BranchesData { get; init; }
 
-        IEnumerable<IActivityInitData> ActivitiesData { get; }
+        IEnumerable<IActivityInitData> ActivitiesData { get; init; }
     }
 }

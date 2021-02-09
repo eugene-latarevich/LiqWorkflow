@@ -2,24 +2,12 @@
 {
     public class BranchTransition
     {
-        public BranchTransition(
-            string fromBranchId, 
-            string toBranchId, 
-            string fromActvityId, 
-            string toActvityId)
-        {
-            FromBranchId = fromBranchId;
-            ToBranchId = toBranchId;
-            FromActvityId = fromActvityId;
-            ToActvityId = toActvityId;
-        }
+        public string FromBranchId { get; init; }
 
-        public string FromBranchId { get; }
+        public string ToBranchId { get; init; }
 
-        public string ToBranchId { get; }
+        public string FromActvityId { get; init; }
 
-        public string FromActvityId { get; }
-
-        public string ToActvityId { get; }
+        public string ToActvityId { get; init; }
     }
 }

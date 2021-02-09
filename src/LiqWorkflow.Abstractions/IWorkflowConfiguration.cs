@@ -6,14 +6,14 @@ namespace LiqWorkflow.Abstractions
 {
     public interface IWorkflowConfiguration
     {
-        string Id { get; }
+        string Id { get; init; }
 
-        string Name { get; }
+        string Name { get; init; }
 
-        RetrySetting RetrySetting { get; }
+        RetrySetting RetrySetting { get; init; }
 
-        CancellationTokenSource CancellationTokenSource { get; }
+        CancellationTokenSource CancellationTokenSource { get; init; }
 
-        IContainer Services { get; }
+        IContainer Services { get; init; }
     }
 }

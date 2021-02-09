@@ -6,27 +6,14 @@ namespace LiqWorkflow.Abstractions.Models.Configurations
 {
     public class WorkflowConfiguration : IWorkflowConfiguration
     {
-        public WorkflowConfiguration(
-            string id, 
-            string name, 
-            RetrySetting retrySetting, 
-            IContainer services)
-        {
-            Id = id;
-            Name = name;
-            RetrySetting = retrySetting;
-            Services = services;
-            CancellationTokenSource = new CancellationTokenSource();
-        }
+        public string Id { get; init; }
 
-        public string Id { get; }
+        public string Name { get; init; }
 
-        public string Name { get; }
+        public RetrySetting RetrySetting { get; init; }
 
-        public RetrySetting RetrySetting { get; }
+        public IContainer Services { get; init; }
 
-        public IContainer Services { get; }
-
-        public CancellationTokenSource CancellationTokenSource { get; }
+        public CancellationTokenSource CancellationTokenSource { get; init; }
     }
 }
