@@ -35,7 +35,8 @@ namespace LiqWorkflow
 
         public virtual bool TryAddWorkflow(IWorkflowInitData workflowInitData)
         {
-            var workflow = BuildWorkflow(workflowInitData);
+            var workflowBuilder = _container.GetService<IWorkflowBuilder>();
+            var workflow = workflowBuilder.BuildWorkflow(workflowInitData);
 
             return TryAddWorkflow(workflowInitData.WorkflowConfiguration.Id, workflow);
         }
@@ -75,17 +76,5 @@ namespace LiqWorkflow
         protected abstract Task OnActivityResultAsync(ActivityData result, CancellationToken cancellation);
 
         protected abstract Task OnLogAsync(OnLogData logData, CancellationToken cancellationToken);
-
-        private IWorkflow BuildWorkflow(IWorkflowInitData workflowInitData)
-        {
-            var workflowBuilder = _container.GetService<IWorkflowBuilder>();
-
-            workflowBuilder.WithConfiguration(workflowInitData.WorkflowConfiguration);
-
-            workflowInitData.BranchesData.ForEach(branchData => workflowBuilder.WithBranch(branchData));
-            workflowInitData.ActivitiesData.ForEach(activityData => workflowBuilder.WithActivity(activityData));
-
-            return workflowBuilder.Build();
-        }
     }
 }
