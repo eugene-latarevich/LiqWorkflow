@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using LiqWorkflow.Abstractions.Activities;
 using LiqWorkflow.Abstractions.Branches;
@@ -30,7 +29,7 @@ namespace LiqWorkflow.Branches
 
                 var branchActivities = CreateBranchActivities(configuration.WithProcesingBranchData(branchData));
 
-                var branch = (IWorkflowBranch)Activator.CreateInstance(typeof(WorkflowBranch), branchData.GetConstructorParameters(configuration.WorkflowConfiguration, branchActivities));
+                var branch = _container.GetService<WorkflowBranch>(branchData.GetConstructorParameters(configuration.WorkflowConfiguration, branchActivities));
                 
                 configuration.Branches.Add(branch);
             }
