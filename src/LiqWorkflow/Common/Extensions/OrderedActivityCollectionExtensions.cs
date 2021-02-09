@@ -18,17 +18,17 @@ namespace LiqWorkflow.Common.Extensions
 
         public static IEnumerable<IWorkflowExecutableActivity> StartFrom(this IOrderedActivityCollection collection, string activityId)
         {
-            var skiped = false; 
+            var skipped = false; 
             foreach (var activity in collection)
             {
                 if (!string.IsNullOrEmpty(activityId))
                 {
-                    if (!skiped && activity.Configuration.ActivityId != activityId)
+                    if (!skipped && activity.Configuration.ActivityId != activityId)
                     {
                         continue;
                     }
 
-                    skiped = true;
+                    skipped = true;
                 }
 
                 yield return activity;
